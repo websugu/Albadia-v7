@@ -1,0 +1,1251 @@
+/* ====================
+   Enhanced Contacts CSS
+   ==================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #1c1e21;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* Background Pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(102, 126, 234, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(118, 75, 162, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ====================
+   Header Section
+   ==================== */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.chat-container {
+    padding: 16px 20px;
+}
+
+.chats-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chats-nav h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.nav-links-1 {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-links-1 button {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-links-1 button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+/* Search Container */
+.search-container {
+    padding: 0 20px 15px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 20px;
+    padding-left: 48px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    background: white;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+}
+
+/* Bottom Navigation */
+.nav-links-2 {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-links-2 a {
+    text-decoration: none;
+}
+
+.nav-links-2 button {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: all 0.2s;
+    border-radius: 12px;
+}
+
+.nav-links-2 button:hover,
+.nav-links-2 button:focus {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ====================
+   Action Buttons
+   ==================== */
+.action-buttons {
+    display: flex;
+}
+
+.actions-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    justify-content: center;
+    margin: auto;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.actions-btn button {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn.secondary:hover {
+    background: #667eea;
+    color: white;
+}
+
+.action-btn i {
+    font-size: 20px;
+}
+
+#add-contact-btn {
+    /* width: 50px;
+    height: 50px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center; */
+}
+
+/* ====================
+   Contact List Container
+   ==================== */
+#contacts-list {
+    padding: 10px 15px;
+    padding-bottom: 90px;
+}
+
+/* Contact Sections */
+.contact-section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #667eea;
+    padding: 12px 16px 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Favorites Section */
+.favorites-section {
+    background: white;
+    border-radius: 16px;
+    margin: 0 5px 20px;
+    padding: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.favorites-section h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.favorites-grid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.favorites-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.favorite-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.favorite-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.favorite-item:hover .favorite-avatar {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.favorite-name {
+    font-size: 0.75rem;
+    color: #333;
+    max-width: 70px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Contact Card */
+.contact {
+    background: white;
+    border-radius: 16px;
+    margin: 6px 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.contact:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Contact Item */
+.call {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+}
+
+.call_header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.call_header img {
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.contact:hover .call_header img {
+    transform: scale(1.05);
+}
+
+.call-name {
+    line-height: 1.4;
+    min-width: 0;
+}
+
+.call-name h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1c1e21;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.call-missed p {
+    color: #888;
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Contact Actions */
+.call-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* Unread badge on contacts message icon */
+.contact-action-btn.message {
+    position: relative;
+}
+
+.contact-action-btn .unread-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #667eea;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 18px;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.35);
+}
+
+
+.contact-action-btn {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.contact-action-btn.call {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.contact-action-btn.message {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.contact-action-btn.video {
+    background: #25D366;
+    color: white;
+}
+
+.contact-action-btn:hover {
+    transform: scale(1.1);
+}
+
+.contact-action-btn.delete {
+    background: none;
+    color: #999;
+    font-size: 18px;
+}
+
+.contact-action-btn.delete:hover {
+    background: #fee;
+    color: #e74c3c;
+}
+
+/* Quick Actions Row */
+.quick-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 16px;
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.quick-action:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.quick-action i {
+    font-size: 18px;
+    color: #667eea;
+}
+
+.quick-action span {
+    font-size: 0.7rem;
+    color: #666;
+}
+
+/* No Contacts State */
+.no-contacts {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.no-contacts i {
+    font-size: 60px;
+    margin-bottom: 20px;
+    color: #ddd;
+}
+
+.no-contacts h3 {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.no-contacts p {
+    font-size: 0.9rem;
+}
+
+/* ====================
+   Full Page Keypad Modal
+   ==================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    z-index: 2000;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+}
+
+/* Keypad Header */
+.keypad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    padding-top: max(20px, env(safe-area-inset-top));
+    background: transparent;
+}
+
+.keypad-cancel-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.keypad-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.keypad-title {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.keypad-add-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.keypad-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.keypad-add-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Phone Number Display */
+.keypad-display {
+    text-align: center;
+    padding: 30px 20px;
+    flex-shrink: 0;
+}
+
+.keypad-number {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: white;
+    letter-spacing: 8px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.keypad-number .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 40px;
+    background: #667eea;
+    animation: blink 1s infinite;
+    margin-left: 4px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.keypad-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+.keypad-hint {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+/* Keypad */
+.keypad-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: max(30px, env(safe-area-inset-bottom));
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.keypad-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    border-radius: 20px;
+    padding: 20px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 70px;
+}
+
+.keypad-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+}
+
+.keypad-btn:active {
+    transform: scale(0.98);
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.keypad-btn .digit {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: white;
+}
+
+.keypad-btn .letters {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Special keypad buttons */
+.keypad-btn.star .digit {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.keypad-btn.zero .digit {
+    font-size: 1.8rem;
+}
+
+.keypad-btn.backspace {
+    background: transparent;
+}
+
+.keypad-btn.backspace:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.keypad-btn.backspace i {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Modal (old - kept for compatibility) */
+
+/* ====================
+   Contact Info Panel (Slide-Up)
+   ==================== */
+.contact-info-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    max-height: 65vh;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.contact-info-panel.show {
+    transform: translateY(0);
+}
+
+.panel-handle {
+    width: 40px;
+    height: 5px;
+    background: #ddd;
+    border-radius: 3px;
+    margin: 12px auto;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.panel-handle:hover {
+    background: #667eea;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.panel-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.panel-close {
+    background: #f0f2f5;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.profile-section img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #667eea;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    margin-bottom: 12px;
+}
+
+.profile-section h2 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.profile-section p {
+    color: #888;
+    font-size: 0.95rem;
+}
+
+.contact-details {
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.detail-item i {
+    font-size: 20px;
+    color: #667eea;
+    width: 24px;
+    text-align: center;
+}
+
+.detail-item .detail-value {
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.panel-actions {
+    display: flex;
+    gap: 12px;
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    background: white;
+}
+
+.panel-action-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.panel-action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.panel-action-btn.primary:hover {
+    transform: translateY(-2px);
+}
+
+.panel-action-btn.secondary {
+    background: #f0f2f5;
+    color: #333;
+}
+
+.panel-action-btn.danger {
+    background: #fee;
+    color: #e74c3c;
+}
+
+/* ====================
+   Call Popup
+   ==================== */
+.call-popup, .ringing-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+    z-index: 2500;
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 300px;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.call-container img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 4px solid #667eea;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.call-container h3 {
+    margin-bottom: 8px;
+    color: #1c1e21;
+    font-size: 1.2rem;
+}
+
+.call-container p {
+    color: #888;
+    margin-bottom: 24px;
+}
+
+.call-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.accept-call, .refuse-call {
+    padding: 14px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.accept-call {
+    background: #25D366;
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+}
+
+.accept-call:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+}
+
+.refuse-call {
+    background: #e74c3c;
+    color: white;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.refuse-call:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+}
+
+/* ====================
+   Create Group Modal
+   ==================== */
+.create-group-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    max-height: 85vh;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.create-group-modal.show {
+    transform: translateY(0);
+}
+
+.create-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+.create-group-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.create-group-header button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.create-group-header button:hover {
+    background: #f0f2f5;
+}
+
+#create-group-submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+#create-group-submit:hover {
+    transform: translateY(-2px);
+}
+
+#create-group-submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.create-group-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Group Image */
+.group-image-section {
+    text-align: center;
+    padding: 10px 0 20px;
+}
+
+.group-image-container {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto;
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.group-image-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.group-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.group-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.group-image-container:hover .group-image-overlay {
+    opacity: 1;
+}
+
+.group-image-overlay i {
+    font-size: 28px;
+    color: white;
+}
+
+.group-image-hint {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Group Name */
+.group-name-section {
+    margin-bottom: 20px;
+}
+
+.group-name-section input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-align: left;
+    letter-spacing: normal;
+}
+
+.group-name-section input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.group-members-section p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.group-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.group-member-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.group-member-item:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+}
+
+.group-member-item img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.group-member-item span {
+    flex: 1;
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.group-member-item input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+/* ====================
+   Animations
+   ==================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.contact {
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+/* ====================
+   Responsive Design
+   ==================== */
+@media (max-width: 480px) {
+    .chat-container {
+        padding: 14px 16px;
+    }
+    
+    .chats-nav h2 {
+        font-size: 1.3rem;
+    }
+    
+    .nav-links-1 button {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+    
+    .search-input {
+        padding: 12px 16px 12px 44px;
+        font-size: 0.95rem;
+    }
+    
+    .action-buttons {
+        padding: 1px 16px;
+    }
+    
+    .action-btn {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+    
+    .call {
+        padding: 12px 14px;
+    }
+    
+    .call_header img {
+        width: 46px;
+        height: 46px;
+    }
+    
+    .call-name h2 {
+        font-size: 0.95rem;
+    }
+    
+    .contact-action-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+    
+    .modal {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .contact-info-panel {
+        max-height: 75vh;
+    }
+    
+    .profile-section img {
+        width: 80px;
+        height: 80px;
+    }
+}

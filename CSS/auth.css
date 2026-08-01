@@ -1,0 +1,297 @@
+/* ====================
+   Modern Auth CSS
+   ==================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ====================
+   Auth Container
+   ==================== */
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ====================
+   Form Section Header
+   ==================== */
+.form-section-h {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.form-section-h h2 {
+    font-size: 1.8rem;
+    color: #1c1e21;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.form-section-h p {
+    color: #65676b;
+    font-size: 0.95rem;
+}
+
+/* ====================
+   Input Fields
+   ==================== */
+.form-section input {
+    width: 100%;
+    padding: 16px 0;
+    font-size: 1rem;
+    border: none;
+    border-bottom: 2px solid #e0e0e0;
+    outline: none;
+    background: transparent;
+    color: #1c1e21;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.form-section input:first-of-type {
+    margin-top: 0;
+}
+
+.form-section input::placeholder {
+    color: #999;
+}
+
+.form-section input:focus {
+    border-bottom-color: #667eea;
+}
+
+.form-section input:focus::placeholder {
+    color: #667eea;
+}
+
+/* ====================
+   Error Messages
+   ==================== */
+.form-section small {
+    display: block;
+    text-align: left;
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    padding-left: 4px;
+}
+
+/* ====================
+   Submit Buttons
+   ==================== */
+.form-section button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    margin-top: 30px;
+    float: right;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.form-section button:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.form-section button:active {
+    transform: scale(0.95);
+}
+
+/* ====================
+   Form Toggle
+   ==================== */
+.form-toggle {
+    text-align: center;
+    margin-top: 24px;
+    color: white;
+}
+
+.form-toggle p {
+    font-size: 0.95rem;
+}
+
+.form-toggle #show-signup {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-toggle #show-signup:hover {
+    text-decoration: underline;
+}
+
+.form-toggle #show-signup span {
+    color: white;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.form-toggle #show-login {
+    display: none;
+    color: white;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.form-toggle #show-login:hover {
+    opacity: 0.8;
+}
+
+/* ====================
+   Hidden State
+   ==================== */
+.hidden {
+    display: none;
+}
+
+/* ====================
+   Form Section Animation
+   ==================== */
+.form-section {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ====================
+   Social Login / Google Button
+   ==================== */
+.social-login {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.divider span {
+    padding: 0 16px;
+    white-space: nowrap;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1c1e21;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.google-btn:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.google-btn:active {
+    transform: translateY(0);
+}
+
+.google-btn svg {
+    flex-shrink: 0;
+}
+
+/* ====================
+   Responsive Design
+   ==================== */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 30px 24px;
+    }
+    
+    .form-section-h h2 {
+        font-size: 1.5rem;
+    }
+    
+    .form-section input {
+        padding: 14px 0;
+        font-size: 0.95rem;
+    }
+    
+    .form-section button {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 360px) {
+    .auth-container {
+        padding: 24px 20px;
+    }
+    
+    body {
+        padding: 16px;
+    }
+}

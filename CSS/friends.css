@@ -1,0 +1,842 @@
+/* ====================
+   Friends Page Styles
+   ==================== */
+
+/* Friends Tabs */
+.friends-tabs {
+  display: flex;
+  padding: 15px 20px;
+  gap: 10px;
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+.friends-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.friends-tab:hover {
+  background: #e8e8e8;
+}
+
+.friends-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.friends-tab i {
+  font-size: 18px;
+}
+
+.tab-badge {
+  background: #ff4757;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.friends-tab.active .tab-badge {
+  background: white;
+  color: #667eea;
+}
+
+/* Section Styles */
+.friends-section {
+  display: none;
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+.friends-section.active {
+  display: block;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 5px;
+}
+
+.section-description {
+  font-size: 14px;
+  color: #65676b;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.action-btn.secondary {
+  background: #f0f0f0;
+  color: #1c1e21;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-state i {
+  font-size: 64px;
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: #65676b;
+}
+
+/* Friend Request Items */
+.friend-request-item,
+.sent-request-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.friend-request-item:hover,
+.sent-request-item:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.request-user,
+.friend-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.request-user img,
+.friend-user img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f0f0;
+}
+
+.request-user-info,
+.friend-user-info {
+  flex: 1;
+}
+
+.request-user-info h4,
+.friend-user-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 4px;
+}
+
+.request-user-info p,
+.friend-user-info p {
+  font-size: 13px;
+  color: #65676b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.pending-status {
+  color: #f39c12 !important;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Request Actions */
+.request-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.request-actions button,
+.btn-cancel-request {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-accept {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-accept:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-reject,
+.btn-cancel-request {
+  background: #f0f0f0;
+  color: #65676b;
+}
+
+.btn-reject:hover,
+.btn-cancel-request:hover {
+  background: #e0e0e0;
+}
+
+.btn-cancel-request {
+  padding: 10px 14px;
+}
+
+/* Friend Items */
+.friend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.friend-item:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.friend-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-actions button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-message:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-more {
+  background: #f0f0f0;
+  color: #65676b;
+}
+
+.btn-more:hover {
+  background: #e0e0e0;
+}
+
+/* ====================
+   Add Friend Modal
+   ==================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.add-friend-modal-content {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 25px 25px 0 0;
+  animation: slideUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c1e21;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #f0f0f0;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #65676b;
+}
+
+.modal-close:hover {
+  background: #e0e0e0;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+/* Keypad Styles */
+.keypad-display {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.keypad-number {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1c1e21;
+  min-height: 45px;
+}
+
+.cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.keypad-error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 10px;
+  min-height: 20px;
+}
+
+.keypad-hint {
+  color: #999;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.keypad-container {
+  margin-bottom: 25px;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.keypad-btn {
+  aspect-ratio: 1;
+  border: none;
+  background: #f5f5f5;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1c1e21;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.keypad-btn:hover {
+  background: #e8e8e8;
+}
+
+.keypad-btn:active {
+  transform: scale(0.95);
+  background: #ddd;
+}
+
+.keypad-btn .letters {
+  font-size: 10px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.keypad-btn.star .digit,
+.keypad-btn.zero .digit {
+  font-size: 28px;
+}
+
+.keypad-btn.backspace {
+  background: #f0f0f0;
+  color: #65676b;
+}
+
+.send-request-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.send-request-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.send-request-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* ====================
+   Profile Preview Modal
+   ==================== */
+
+.profile-preview-content {
+  background: white;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 25px;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+.profile-preview-header {
+  margin-bottom: 25px;
+}
+
+.profile-preview-header img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #f0f0f0;
+  margin-bottom: 15px;
+}
+
+.profile-preview-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 5px;
+}
+
+.profile-preview-header p {
+  font-size: 14px;
+  color: #65676b;
+}
+
+.profile-preview-details {
+  margin-bottom: 25px;
+}
+
+.profile-preview-details .detail-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #65676b;
+  font-size: 14px;
+}
+
+.profile-preview-details .detail-item i {
+  font-size: 18px;
+}
+
+.profile-preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-action-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.preview-action-btn.accept {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.preview-action-btn.reject {
+  background: #f0f0f0;
+  color: #65676b;
+}
+
+.preview-action-btn.cancel {
+  background: #fee;
+  color: #e74c3c;
+}
+
+.preview-action-btn.message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.preview-action-btn.view {
+  background: #f0f0f0;
+  color: #1c1e21;
+}
+
+.preview-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ====================
+   Confirm Modal
+   ==================== */
+
+.confirm-modal-content {
+  background: white;
+  width: 90%;
+  max-width: 350px;
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+.confirm-modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1c1e21;
+  margin-bottom: 15px;
+}
+
+.confirm-modal-body p {
+  font-size: 14px;
+  color: #65676b;
+  margin-bottom: 25px;
+}
+
+.confirm-modal-footer {
+  display: flex;
+  gap: 12px;
+}
+
+.confirm-modal-footer button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: #65676b;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.confirm-modal-footer button:hover {
+  transform: translateY(-2px);
+}
+
+/* ====================
+   Toast Notification
+   ==================== */
+
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1c1e21;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 10000;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ====================
+   Dark Mode Support
+   ==================== */
+
+@media (prefers-color-scheme: dark) {
+  .friends-tabs {
+    background: #1c1e21;
+    border-color: #333;
+  }
+  
+  .friends-tab {
+    background: #2c2e33;
+    color: #aaa;
+  }
+  
+  .friends-tab:hover {
+    background: #3a3d42;
+  }
+  
+  .section-header h3 {
+    color: #ffffff;
+  }
+  
+  .section-description {
+    color: #aaa;
+  }
+  
+  .friend-request-item,
+  .sent-request-item,
+  .friend-item {
+    background: #2c2e33;
+  }
+  
+  .request-user-info h4,
+  .friend-user-info h4 {
+    color: #ffffff;
+  }
+  
+  .request-user-info p,
+  .friend-user-info p {
+    color: #aaa;
+  }
+  
+  .modal-close {
+    background: #3a3d42;
+    color: #aaa;
+  }
+  
+  .add-friend-modal-content,
+  .profile-preview-content,
+  .confirm-modal-content {
+    background: #1c1e21;
+  }
+  
+  .modal-header {
+    border-color: #333;
+  }
+  
+  .modal-header h3 {
+    color: #ffffff;
+  }
+  
+  .keypad-number {
+    color: #ffffff;
+  }
+  
+  .keypad-btn {
+    background: #2c2e33;
+    color: #ffffff;
+  }
+  
+  .keypad-btn:hover {
+    background: #3a3d42;
+  }
+  
+  .keypad-btn.backspace {
+    background: #333;
+  }
+  
+  .profile-preview-header h2 {
+    color: #ffffff;
+  }
+  
+  .btn-reject,
+  .btn-cancel-request,
+  .preview-action-btn.reject,
+  .preview-action-btn.cancel,
+  .preview-action-btn.view {
+    background: #333;
+    color: #aaa;
+  }
+}
+
+/* ====================
+   Responsive Design
+   ==================== */
+
+@media (max-width: 480px) {
+  .friends-tabs {
+    padding: 12px 15px;
+    gap: 8px;
+  }
+  
+  .friends-tab {
+    padding: 10px 12px;
+    font-size: 12px;
+    gap: 5px;
+  }
+  
+  .friends-tab i {
+    font-size: 16px;
+  }
+  
+  .friends-section {
+    padding: 15px;
+  }
+  
+  .request-user img,
+  .friend-user img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .request-user-info h4,
+  .friend-user-info h4 {
+    font-size: 15px;
+  }
+  
+  .request-actions button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .profile-preview-header img {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .profile-preview-header h2 {
+    font-size: 20px;
+  }
+}
