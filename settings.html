@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel="stylesheet" href="CSS/settings.css">
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+  <header>
+    <div class="chat-container">
+      <div class="chats-nav">
+          <div>
+              <h2>Settings</h2>
+          </div>
+          <div class="nav-links-1">
+              <div>
+                  <button title="Privacy"><i class="ri-lock-line"></i></button>
+              </div>
+              <div>
+                  <button title="Search"><i class="ri-search-line"></i></button>
+              </div>
+              <div>
+                  <button title="More"><i class="ri-more-2-fill"></i></button>
+              </div>
+          </div>
+      </div>
+   </div>
+   
+   <div class="nav-links-2 floating">
+        <a href="chats.html"><button><i class="ri-chat-3-line"></i><span>Chats</span></button></a>
+        <a href="calls.html"><button><i class="ri-phone-line"></i><span>Calls</span></button></a>
+        <a href="stories.html"><button><i class="ri-meteor-line"></i><span>Stories</span></button></a>
+        <a href="contacts.html"><button><i class="ri-group-line"></i><span>Contacts</span></button></a>
+        <a href="settings.html"><button class="active"><i class="ri-settings-5-line"></i><span>Settings</span></button></a>
+
+   </div>
+  </header>
+
+  <div class="settings-content">
+    <!-- Premium Card -->
+    <div class="premium-card">
+        <div class="call">
+            <div class="call_header">
+                <div class="preminum-txt">
+                    <p><i class="ri-vip-crown-2-fill"></i> Chat Premium</p>
+                </div>
+            </div>
+            <div class="call-time">
+                <div class="preminum-go">
+                    <p>Upgrade <i class="ri-arrow-right-s-line"></i></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <div class="call" id="profile-call">
+            <div class="call_header">
+                <img id="profile-image" src="images/default-profile.png" alt="Profile Image">
+            </div>
+            <div class="call-name">  
+                <div>
+                    <h4>Your Profile</h4>
+                </div>
+                <div class="call-missed">
+                    <h3 id="full-name">Loading...</h3>
+                </div>
+            </div>
+            <div class="call-time">
+                <a href="#" id="edit-profile-btn"><i class="ri-edit-2-line"></i></a>
+            </div>
+        </div>
+        
+        <div class="call" id="view-profile-btn">
+            <div class="call_header">
+                <img src="images/default-profile.png" style="border-radius: 12px; width: 50px; height: 50px;" alt="My Number">
+            </div>
+            <div class="call-name">  
+                <div>
+                    <h4>Private Number</h4>
+                </div>
+                <div class="call-missed">
+                    <p id="mobile-number">Loading...</p>
+                </div>
+            </div>
+            <div class="call-time">
+                <a href="#"><i class="ri-qr-code-line"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="settings-section">
+        <div class="section-header">Account</div>
+        
+        <div class="setting-item" id="edit-profile-setting">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-user-settings-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Edit Profile</div>
+                    <div class="setting-item-description">Change name, photo, and status</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-key-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Change Password</div>
+                    <div class="setting-item-description">Update your account password</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-device-phone-view-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Active Sessions</div>
+                    <div class="setting-item-description">Manage your logged in devices</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-download-cloud-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Download Data</div>
+                    <div class="setting-item-description">Get a copy of your data</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="settings-section">
+        <div class="section-header">Privacy</div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-eye-off-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Last Seen</div>
+                    <div class="setting-item-description">Control who sees your last seen</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-profile-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Profile Photo</div>
+                    <div class="setting-item-description">Who can see your profile photo</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-message-off-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Read Receipts</div>
+                    <div class="setting-item-description">Send read receipts</div>
+                </div>
+            </div>
+            <div class="toggle-switch active"></div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-group-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Group Settings</div>
+                    <div class="setting-item-description">Who can add you to groups</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-spam-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Blocked Contacts</div>
+                    <div class="setting-item-description">Manage blocked users</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Settings -->
+    <div class="settings-section">
+        <div class="section-header">Notifications</div>
+        
+        <div class="setting-toggle-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-notification-3-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Push Notifications</div>
+                    <div class="setting-item-description">Receive notifications in background</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" id="push-toggle"></div>
+        </div>
+        
+        <div class="setting-toggle-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-volume-up-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Notification Sound</div>
+                    <div class="setting-item-description">Play sound for new messages</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" id="sound-toggle"></div>
+        </div>
+        
+        <div class="setting-toggle-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-vibrate-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Vibration</div>
+                    <div class="setting-item-description">Vibrate for new messages</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" id="vibration-toggle"></div>
+        </div>
+        
+        <div class="setting-toggle-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-message-2-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Message Preview</div>
+                    <div class="setting-item-description">Show preview in notifications</div>
+                </div>
+            </div>
+            <div class="toggle-switch active" id="preview-toggle"></div>
+        </div>
+    </div>
+
+    <!-- Storage & Data -->
+    <div class="settings-section">
+        <div class="section-header">Storage & Data</div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-hard-drive-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Storage Usage</div>
+                    <div class="setting-item-description">Manage local storage</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-wifi-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Network Usage</div>
+                    <div class="setting-item-description">View data usage statistics</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-delete-bin-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Clear Cache</div>
+                    <div class="setting-item-description">Free up storage space</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Settings -->
+    <div class="settings-section">
+        <div class="section-header">App</div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-palette-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Theme</div>
+                    <div class="setting-item-description">Light, Dark, or System</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-global-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Language</div>
+                    <div class="setting-item-description">English</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-notification-badge-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">App Notifications</div>
+                    <div class="setting-item-description">Updates and promotions</div>
+                </div>
+            </div>
+            <div class="toggle-switch active"></div>
+        </div>
+    </div>
+
+    <!-- Help & Support -->
+    <div class="settings-section">
+        <div class="section-header">Help & Support</div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-question-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Help Center</div>
+                    <div class="setting-item-description">FAQs and support</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-error-warning-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">Report a Problem</div>
+                    <div class="setting-item-description">Let us know if something's wrong</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+        
+        <div class="setting-item">
+            <div class="setting-item-info">
+                <div class="setting-item-icon">
+                    <i class="ri-information-line"></i>
+                </div>
+                <div class="setting-item-text">
+                    <div class="setting-item-label">About</div>
+                    <div class="setting-item-description">Version 1.0.0</div>
+                </div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="settings-section">
+        <div class="action-item logout-item" id="logout-btn">
+            <div class="setting-item-info">
+                <div class="action-item-icon red">
+                    <i class="ri-logout-box-r-line"></i>
+                </div>
+                <div class="action-item-label">Logout</div>
+            </div>
+            <div class="setting-item-arrow">
+                <i class="ri-arrow-right-s-line"></i>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Profile</h3>
+        <button class="modal-close" id="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-profile-form" class="settings-form">
+          <div class="profile-image-upload">
+            <img id="modal-profile-image" class="current-profile-image" src="images/default-profile.png" alt="Profile">
+            <label for="edit-profile-image" class="upload-btn">
+                <i class="ri-camera-line"></i> Change Photo
+            </label>
+            <input type="file" id="edit-profile-image" accept="image/*">
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-first-name">First Name</label>
+            <input type="text" id="edit-first-name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-last-name">Last Name</label>
+            <input type="text" id="edit-last-name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-status">About</label>
+            <textarea id="edit-status" placeholder="Hey there! I'm using Chat" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-edit">Cancel</button>
+        <button class="btn btn-primary" id="save-profile">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+      authDomain: "posts-c532d.firebaseapp.com",
+      projectId: "posts-c532d",
+      storageBucket: "posts-c532d.appspot.com",
+      messagingSenderId: "742123859279",
+      appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // DOM elements
+    const profileImage = document.getElementById('profile-image');
+    const fullName = document.getElementById('full-name');
+    const mobileNumber = document.getElementById('mobile-number');
+    const logoutBtn = document.getElementById('logout-btn');
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    const editProfileSetting = document.getElementById('edit-profile-setting');
+
+    // Modal elements
+    const editProfileModal = document.getElementById('edit-profile-modal');
+    const closeModal = document.getElementById('close-modal');
+    const cancelEdit = document.getElementById('cancel-edit');
+    const editProfileForm = document.getElementById('edit-profile-form');
+    const editProfileImage = document.getElementById('edit-profile-image');
+    const modalProfileImage = document.getElementById('modal-profile-image');
+    const editFirstName = document.getElementById('edit-first-name');
+    const editLastName = document.getElementById('edit-last-name');
+    const editStatus = document.getElementById('edit-status');
+    const saveProfile = document.getElementById('save-profile');
+
+    let currentUserData = null;
+
+    // Fetch user info
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentUserData = userDoc.data();
+          profileImage.src = currentUserData.profileImageUrl || 'images/default-profile.png';
+          modalProfileImage.src = currentUserData.profileImageUrl || 'images/default-profile.png';
+          fullName.textContent = `${currentUserData.firstName} ${currentUserData.lastName}`;
+          mobileNumber.textContent = currentUserData.mobileNumber || 'Not set';
+
+          // Pre-fill modal fields
+          editFirstName.value = currentUserData.firstName || '';
+          editLastName.value = currentUserData.lastName || '';
+          editStatus.value = currentUserData.status || '';
+        }
+      } else {
+        window.location.href = "auth.html";
+      }
+    });
+
+    // Open modal
+    function openEditModal() {
+      editProfileModal.classList.add('show');
+    }
+
+    editProfileBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openEditModal();
+    });
+
+    editProfileSetting.addEventListener('click', openEditModal);
+
+    // Close modal
+    function closeEditModal() {
+      editProfileModal.classList.remove('show');
+    }
+
+    closeModal.addEventListener('click', closeEditModal);
+    cancelEdit.addEventListener('click', closeEditModal);
+
+    // Close modal on outside click
+    editProfileModal.addEventListener('click', (e) => {
+      if (e.target === editProfileModal) {
+        closeEditModal();
+      }
+    });
+
+    // Preview profile image
+    editProfileImage.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          modalProfileImage.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Handle profile update
+    saveProfile.addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const userRef = doc(db, "users", user.uid);
+        
+        // Update text fields
+        await updateDoc(userRef, {
+          firstName: editFirstName.value,
+          lastName: editLastName.value,
+          status: editStatus.value
+        });
+
+        // Upload new profile image if selected
+        const file = editProfileImage.files[0];
+        if (file) {
+          const imageRef = ref(storage, `profile-images/${user.uid}`);
+          await uploadBytes(imageRef, file);
+          const imageUrl = await getDownloadURL(imageRef);
+          await updateDoc(userRef, { profileImageUrl: imageUrl });
+          profileImage.src = imageUrl;
+          modalProfileImage.src = imageUrl;
+        }
+
+        // Update UI
+        fullName.textContent = `${editFirstName.value} ${editLastName.value}`;
+        
+        alert("Profile updated successfully!");
+        closeEditModal();
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        alert("Error updating profile: " + error.message);
+      }
+    });
+
+    // =====================
+    // NOTIFICATION SETTINGS
+    // =====================
+
+    function setToggleState(toggleEl, isActive) {
+      if (!toggleEl) return;
+      toggleEl.classList.toggle('active', !!isActive);
+
+      // Persist
+      const key = toggleEl.id ? `setting:${toggleEl.id}` : null;
+      if (key) localStorage.setItem(key, isActive ? '1' : '0');
+    }
+
+    // Load saved toggle states
+    document.querySelectorAll('.toggle-switch').forEach(toggle => {
+      const key = toggle.id ? `setting:${toggle.id}` : null;
+      if (!key) return;
+      const saved = localStorage.getItem(key);
+      if (saved === '1') setToggleState(toggle, true);
+      else if (saved === '0') setToggleState(toggle, false);
+    });
+
+    // Toggle switch functionality
+    document.querySelectorAll('.toggle-switch').forEach(toggle => {
+      toggle.addEventListener('click', async () => {
+        const next = !toggle.classList.contains('active');
+        setToggleState(toggle, next);
+
+        // Test vibration
+        if (next && navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+
+        // If push toggled, request permission from notification layer
+        if (toggle.id === 'push-toggle' && window.requestNotificationPermission) {
+          try {
+            await window.requestNotificationPermission();
+            // Also update FCM layer prefs so notifications respect the toggle
+            if (window.updateNotificationPrefs) {
+              window.updateNotificationPrefs({ pushEnabled: next });
+            }
+          } catch (e) {}
+        }
+
+        // Keep the notification prefs in sync for other toggles too
+        if (window.updateNotificationPrefs) {
+          if (toggle.id === 'sound-toggle') window.updateNotificationPrefs({ soundEnabled: next });
+          if (toggle.id === 'vibration-toggle') window.updateNotificationPrefs({ vibrationEnabled: next });
+          if (toggle.id === 'preview-toggle') window.updateNotificationPrefs({ previewEnabled: next });
+        }
+      });
+    });
+
+    // Logout functionality
+    logoutBtn.addEventListener('click', () => {
+      if (confirm("Are you sure you want to logout?")) {
+        signOut(auth).then(() => {
+          window.location.href = "auth.html";
+        }).catch((error) => {
+          alert("Error: " + error.message);
+        });
+      }
+    });
+
+    // =====================
+    // EXTRA SETTINGS ACTIONS (cache + quick privacy)
+    // =====================
+
+    // Clear Cache button (PWA cache + optional storage)
+    const clearCacheItem = document.querySelector('.settings-section .setting-item');
+    // Prefer a dedicated button if present via id
+    const clearCacheBtn = document.getElementById('clear-cache-btn');
+    const clearCacheTarget = clearCacheBtn || document.querySelector(".settings-section .setting-item .setting-item-label")?.closest('.setting-item')?.querySelector('');
+
+    document.querySelectorAll('.setting-item').forEach(item => {
+      const labelEl = item.querySelector('.setting-item-label');
+      if (!labelEl) return;
+      if (labelEl.textContent.trim() === 'Clear Cache') {
+        item.addEventListener('click', async () => {
+          try {
+            if (!('caches' in window)) throw new Error('Cache API not available');
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+            alert('Cache cleared');
+          } catch (e) {
+            console.error(e);
+            alert('Failed to clear cache');
+          }
+        });
+      }
+    });
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

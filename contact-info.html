@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Info</title>
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link rel="stylesheet" href="CSS/profile.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <style>
+    /* Contact info styles - handled by profile.css */
+  </style>
+</head>
+<body>
+  <div class="contact-info-container">
+    <button class="back-btn" onclick="window.history.back()">
+      <i class="ri-arrow-left-s-line"></i>
+      <span>Back</span>
+    </button>
+    <div id="contact-info-content">
+      <div style="text-align: center; padding: 50px;">
+        <p>Loading contact information...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+      authDomain: "posts-c532d.firebaseapp.com",
+      projectId: "posts-c532d",
+      storageBucket: "posts-c532d.appspot.com",
+      messagingSenderId: "742123859279",
+      appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const contactId = urlParams.get("contactId");
+
+    if (!contactId) {
+      alert("No contact selected");
+      window.location.href = "chats.html";
+    }
+
+    async function displayContactInfo() {
+      const contactDoc = await getDoc(doc(db, "users", contactId));
+      
+      if (!contactDoc.exists()) {
+        document.getElementById("contact-info-content").innerHTML = "<div style='text-align: center; padding: 50px;'><p>Contact not found</p></div>";
+        return;
+      }
+
+      const contactData = contactDoc.data();
+      
+      document.getElementById("contact-info-content").innerHTML = 
+        "<div class='contact-info-header'>" +
+          "<img src='" + (contactData.profileImageUrl || "images/default-profile.png") + "' alt='Profile Image'>" +
+          "<h2>" + contactData.firstName + " " + contactData.lastName + "</h2>" +
+          "<p>" + (contactData.mobileNumber || "No mobile number") + "</p>" +
+        "</div>" +
+        "<div class='contact-info-actions'>" +
+          "<button id='chat-btn'><i class='ri-chat-3-fill'></i><span>Chat</span></button>" +
+          "<button id='call-btn'><i class='ri-phone-fill'></i><span>Call</span></button>" +
+          "<button id='video-btn'><i class='ri-video-on-fill'></i><span>Video</span></button>" +
+        "</div>" +
+        "<div class='contact-info-details'>" +
+          "<h3>Contact Details</h3>" +
+          "<div class='detail-item'><i class='ri-user-line'></i><span class='detail-label'>Name</span><span class='detail-value'>" + contactData.firstName + " " + contactData.lastName + "</span></div>" +
+          "<div class='detail-item'><i class='ri-phone-line'></i><span class='detail-label'>Mobile</span><span class='detail-value'>" + (contactData.mobileNumber || "Not available") + "</span></div>" +
+          "<div class='detail-item'><i class='ri-calendar-line'></i><span class='detail-label'>Joined</span><span class='detail-value'>" + (contactData.createdAt ? new Date(contactData.createdAt.seconds * 1000).toLocaleDateString() : "Unknown") + "</span></div>" +
+        "</div>";
+
+      document.getElementById("chat-btn").addEventListener("click", function() { startChat(contactId, contactData); });
+      document.getElementById("call-btn").addEventListener("click", function() { initiateCall(contactId, contactData); });
+    }
+
+    async function startChat(contactId, contactData) {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+        const userData = userDoc.data();
+        
+        if (!userData.chats || !userData.chats.find(function(chat) { return chat.chatId === chatId; })) {
+          const userRef = doc(db, "users", currentUser.uid);
+          const contactRef = doc(db, "users", contactId);
+          await updateDoc(userRef, { chats: arrayUnion({ chatId: chatId, contactId: contactId }) });
+          await updateDoc(contactRef, { chats: arrayUnion({ chatId: chatId, contactId: currentUser.uid }) });
+          const chatRef = doc(db, "chats", chatId);
+          await setDoc(chatRef, { messages: [] });
+        }
+
+        window.location.href = "chatting.html?chatId=" + chatId + "&contactId=" + contactId;
+      }
+    }
+
+    async function initiateCall(contactId, contactData) {
+      const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+      
+      await updateDoc(doc(db, "users", contactId), {
+        incomingCall: {
+          from: currentUser.uid,
+          callerName: currentUser.firstName + " " + currentUser.lastName,
+          callerImage: currentUser.profileImageUrl || "images/default-profile.png",
+          chatId: chatId
+        }
+      });
+
+      window.location.href = "calling.html?contactId=" + contactId + "&chatId=" + chatId;
+    }
+
+    onAuthStateChanged(auth, async function(user) {
+      if (user) {
+        currentUser = user;
+        await displayContactInfo();
+      } else {
+        window.location.href = "auth.html";
+      }
+    });
+  </script>
+</body>
+</html>

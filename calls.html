@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calls</title>
+    <link rel="stylesheet" href="CSS/call.css">
+    <link rel="stylesheet" href="CSS/chats.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0b1220">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <style>
+        .search-container {
+            padding: 10px 15px;
+            background: #f5f5f5;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+        }
+        .search-input:focus {
+            box-shadow: 0 0 0 2px #007bff;
+        }
+        .call-history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        .call-history-item:hover {
+            background-color: #f5f5f5;
+        }
+        .call-history-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .call-history-left img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .call-history-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .call-history-info p {
+            margin: 0;
+            font-size: 14px;
+        }
+        .call-missed { color: red; }
+        .call-incoming { color: green; }
+        .call-outgoing { color: #333; }
+        .call-duration {
+            font-size: 12px;
+            color: #666;
+        }
+        .call-history-right {
+            text-align: right;
+        }
+        .call-history-right small {
+            color: #999;
+            font-size: 12px;
+        }
+        .no-calls {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="chat-container">
+            <div class="chats-nav">
+                <div>
+                    <h2>Calls</h2>
+                </div>
+                <div class="nav-links-1">
+                    <div>
+                        <button><i class="ri-lock-line"></i></button>
+                    </div>
+                    <div>
+                        <button><i class="ri-search-line"></i></button>
+                    </div>
+                    <div>
+                        <button><i class="ri-more-2-fill"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search calls...">
+        </div>
+<div class="nav-links-2 floating">
+            <a href="chats.html"><button><i class="ri-chat-3-line"></i><span>Chats</span></button></a>
+            <a href="calls.html"><button class="active"><i class="ri-phone-line"></i><span>Calls</span></button></a>
+            <a href="stories.html"><button><i class="ri-meteor-line"></i><span>Stories</span></button></a>
+            <a href="contacts.html"><button><i class="ri-group-line"></i><span>Contacts</span></button></a>
+            <a href="settings.html"><button><i class="ri-settings-5-line"></i><span>Settings</span></button></a>
+        </div>
+        
+        <div id="calls-list">
+            <div class="no-calls">
+                <p>Loading calls...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+            authDomain: "posts-c532d.firebaseapp.com",
+            projectId: "posts-c532d",
+            storageBucket: "posts-c532d.appspot.com",
+            messagingSenderId: "742123859279",
+            appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let allCalls = []; // Store all calls for filtering
+
+        const searchInput = document.getElementById("search-input");
+
+        // Search functionality
+        searchInput.addEventListener("input", function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            filterCalls(searchTerm);
+        });
+
+        function filterCalls(searchTerm) {
+            if (!searchTerm) {
+                renderCalls(allCalls);
+                return;
+            }
+            
+            const filteredCalls = allCalls.filter(function(call) {
+                const name = (call.contactName || "").toLowerCase();
+                return name.includes(searchTerm);
+            });
+            
+            renderCalls(filteredCalls);
+        }
+
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (days === 1) {
+                return "Yesterday";
+            } else if (days < 7) {
+                return date.toLocaleDateString([], { weekday: 'short' });
+            } else {
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+        }
+
+        function formatDuration(seconds) {
+            if (seconds === 0) return "";
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            if (mins > 0) {
+                return mins + "m " + secs + "s";
+            }
+            return secs + "s";
+        }
+
+        function renderCalls(calls) {
+            // Extra UI actions (call again / filter toggles)
+            // Call Again will open audio call with existing chatId.
+
+            const callsList = document.getElementById("calls-list");
+            callsList.innerHTML = "";
+            
+            if (calls.length === 0) {
+                callsList.innerHTML = "<div class='no-calls'><p>" + (searchInput.value ? "No calls found" : "No call history yet") + "</p></div>";
+                return;
+            }
+
+            for (const call of calls) {
+                let statusClass = "";
+                let statusIcon = "";
+                let statusText = "";
+                
+                if (call.status === "missed") {
+                    statusClass = "call-missed";
+                    statusIcon = "<i class='ri-arrow-down-line' style='color: red;'></i>";
+                    statusText = "Missed";
+                } else if (call.direction === "incoming") {
+                    statusClass = "call-incoming";
+                    statusIcon = "<i class='ri-arrow-down-line' style='color: green;'></i>";
+                    statusText = "Incoming";
+                } else {
+                    statusClass = "call-outgoing";
+                    statusIcon = "<i class='ri-arrow-up-line' style='color: #333;'></i>";
+                    statusText = "Outgoing";
+                }
+
+                const callDiv = document.createElement("div");
+                callDiv.className = "call-history-item";
+                callDiv.innerHTML = 
+                    "<div class='call-history-left'>" +
+                        "<img src='" + call.contactImage + "' alt=''>" +
+                        "<div class='call-history-info'>" +
+                            "<h3>" + call.contactName + "</h3>" +
+                            "<p class='" + statusClass + "'>" + statusIcon + " " + statusText + "</p>" +
+                        "</div>" +
+                    "</div>" +
+                    "<div class='call-history-right'>" +
+                        "<div><small>" + formatTimestamp(call.timestamp) + "</small></div>" +
+                        "<div class='call-duration'>" + formatDuration(call.duration) + "</div>" +
+                    "</div>";
+
+                callDiv.addEventListener("click", function() {
+                    window.location.href = "chatting.html?contactId=" + call.contactId + "&chatId=chat_" + currentUser.uid + "_" + call.contactId;
+                });
+
+                callsList.appendChild(callDiv);
+            }
+        }
+
+        async function displayCallHistory() {
+            const callsList = document.getElementById("calls-list");
+            
+            try {
+                const callHistoryQuery = query(
+                    collection(db, "users", currentUser.uid, "callHistory"),
+                    orderBy("timestamp", "desc")
+                );
+
+                const querySnapshot = await getDocs(callHistoryQuery);
+                
+                if (querySnapshot.empty) {
+                    callsList.innerHTML = "<div class='no-calls'><p>No call history yet</p></div>";
+                    return;
+                }
+
+                allCalls = [];
+
+                for (const docSnap of querySnapshot.docs) {
+                    const callData = docSnap.data();
+                    
+                    let contactName = "Unknown";
+                    let contactImage = "images/default-profile.png";
+                    
+                    try {
+                        const contactDoc = await getDoc(doc(db, "users", callData.contactId));
+                        if (contactDoc.exists()) {
+                            const contactData = contactDoc.data();
+                            contactName = contactData.firstName + " " + contactData.lastName;
+                            contactImage = contactData.profileImageUrl || "images/default-profile.png";
+                        }
+                    } catch (e) {
+                        console.log("Error getting contact:", e);
+                    }
+
+                    allCalls.push({
+                        contactId: callData.contactId,
+                        contactName: contactName,
+                        contactImage: contactImage,
+                        direction: callData.direction,
+                        status: callData.status,
+                        duration: callData.duration,
+                        timestamp: callData.timestamp
+                    });
+                }
+
+                renderCalls(allCalls);
+
+            } catch (error) {
+                console.error("Error loading call history:", error);
+                callsList.innerHTML = "<div class='no-calls'><p>Error loading calls</p></div>";
+            }
+        }
+
+        onAuthStateChanged(auth, function(user) {
+            if (user) {
+                currentUser = user;
+                displayCallHistory();
+            } else {
+                window.location.href = "auth.html";
+            }
+        });
+    </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

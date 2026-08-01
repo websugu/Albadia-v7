@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Call</title>
+  <link rel="stylesheet" href="CSS/call.css" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <style>
+    body{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
+    .wrap{width:min(980px,96vw);display:flex;flex-direction:column;gap:14px;}
+    .hud{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+    .title{font-size:18px;font-weight:700;letter-spacing:.2px;}
+    .net{font-size:12px;opacity:.9;}
+    .actions{display:flex;gap:12px;}
+    .btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;background:rgba(255,255,255,.08);color:#fff;}
+    .btn:hover{transform:scale(1.06);}
+    .end{background:#e74c3c;}
+    .mute{background:#34495e;}
+    .cam{background:#27ae60;}
+
+    .videos{display:grid;grid-template-columns:1fr;gap:14px;}
+    @media (min-width:720px){.videos{grid-template-columns:1fr 1fr;}}
+
+    .video-card{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;position:relative;}
+    video{width:100%;height:100%;display:block;object-fit:cover;aspect-ratio:16/10;background:#000;}
+    .label{position:absolute;left:12px;top:12px;background:rgba(0,0,0,.45);padding:6px 10px;border-radius:999px;font-size:12px;backdrop-filter: blur(6px);}
+
+    /* Small call controls for mobile bottom */
+    .bottombar{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding-bottom:6px;}
+
+    /* Hide placeholder because real WebRTC is already in calling/receiving-call */
+    .placeholder{opacity:.85;font-size:13px;line-height:1.4;text-align:center;}
+
+    /* Video call UI currently expects the real tracks to be attached by calling/receiving-call.
+       If nothing is attached, it shows a helpful placeholder. */
+    .video-card.placeholder-state::after{
+      content:'No video stream yet.';
+      position:absolute;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      color:rgba(255,255,255,.85);
+      font-size:14px;
+      background:linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.55));
+    }
+
+    .hidden{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hud">
+      <div>
+        <div class="title" id="call-title">Video Call</div>
+        <div class="net" id="net-status">Checking...</div>
+      </div>
+      <div class="actions bottombar">
+        <button class="btn mute" id="mute-btn" title="Mute"><i class="ri-mic-line"></i></button>
+        <button class="btn cam" id="cam-btn" title="Toggle Camera"><i class="ri-camera-fill"></i></button>
+        <button class="btn end" id="end-btn" title="End Call"><i class="ri-phone-line"></i></button>
+      </div>
+    </div>
+
+    <div class="placeholder" id="placeholder">If you navigated here, the actual WebRTC call runs on <b>calling.html</b> / <b>receiving-call.html</b>. This page only provides controls + video containers.</div>
+
+    <div class="videos">
+      <div class="video-card placeholder-state" id="remote-card">
+        <div class="label" id="remote-label">Remote</div>
+        <video id="remote-video" autoplay playsinline></video>
+      </div>
+      <div class="video-card placeholder-state" id="local-card">
+        <div class="label" id="local-label">You</div>
+        <video id="local-video" muted autoplay playsinline></video>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Controls are best-effort; real media tracks live in calling.html/receiving-call.html.
+    const muteBtn = document.getElementById('mute-btn');
+    const camBtn = document.getElementById('cam-btn');
+    const endBtn = document.getElementById('end-btn');
+    const netStatus = document.getElementById('net-status');
+
+    let muted = false;
+    let camOff = false;
+
+    function attachStreamIfProvided() {
+      // If calling/receiving-call forwards streams via window.__LOCAL_STREAM/REMOTE_STREAM,
+      // this UI can attach. (Not currently implemented in those pages.)
+      try {
+        const local = window.__LOCAL_STREAM;
+        const remote = window.__REMOTE_STREAM;
+        const localVideo = document.getElementById('local-video');
+        const remoteVideo = document.getElementById('remote-video');
+
+        if (local && localVideo && localVideo.srcObject !== local) {
+          localVideo.srcObject = local;
+          document.getElementById('local-card').classList.remove('placeholder-state');
+        }
+        if (remote && remoteVideo && remoteVideo.srcObject !== remote) {
+          remoteVideo.srcObject = remote;
+          document.getElementById('remote-card').classList.remove('placeholder-state');
+        }
+
+        if (local || remote) {
+          document.getElementById('placeholder').classList.add('hidden');
+        }
+      } catch (e) {}
+    }
+
+    attachStreamIfProvided();
+
+    function setMuteForAvailableTracks() {
+      const videos = [document.getElementById('local-video')];
+      videos.forEach((v) => {
+        const stream = v?.srcObject;
+        if (stream) {
+          stream.getAudioTracks().forEach(t => (t.enabled = !muted));
+        }
+      });
+    }
+
+    function setCamForAvailableTracks() {
+      const videos = [document.getElementById('local-video')];
+      videos.forEach((v) => {
+        const stream = v?.srcObject;
+        if (stream) {
+          stream.getVideoTracks().forEach(t => (t.enabled = !camOff));
+        }
+      });
+    }
+
+    muteBtn.addEventListener('click', () => {
+      muted = !muted;
+      muteBtn.innerHTML = muted ? '<i class="ri-mic-off-line"></i>' : '<i class="ri-mic-line"></i>';
+      setMuteForAvailableTracks();
+    });
+
+    camBtn.addEventListener('click', () => {
+      camOff = !camOff;
+      camBtn.innerHTML = camOff ? '<i class="ri-camera-off-fill"></i>' : '<i class="ri-camera-fill"></i>';
+      setCamForAvailableTracks();
+    });
+
+    endBtn.addEventListener('click', () => {
+      // End call: best effort; if call is running in calling/receiving-call, user should end there.
+      window.location.href = 'chats.html';
+    });
+
+    // Placeholder network status
+    setInterval(() => {
+      if (!netStatus) return;
+      netStatus.textContent = 'Call UI active';
+    }, 5000);
+  </script>
+</body>
+</html>
+

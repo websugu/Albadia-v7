@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Profile</title>
+  <link rel="stylesheet" href="CSS/profile.css">
+   <!-- icon itegration -->
+   <link
+   href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+   rel="stylesheet"
+/>
+</head>
+<body>
+  <section>
+    <div class="back" onclick="window.location='auth.html'" style="width: fit-content;">
+      <i class="ri-arrow-left-line" style="background: none;"></i>
+    </div>
+    <div>
+      <h2>Create Your Profile</h2>
+    </div>
+    <div class="profile-body">
+      <div class="profile-container">
+        <div>
+          <input type="file" id="profile-image" accept="image/*" style="display: none;">
+          <div class="img-con">
+            <img id="image-preview" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" alt="Image Preview" style="width: 120px; height: 120px;background-color: rgb(226, 226, 226);border-radius: 50%;">
+            <div class="position">
+              <label for="profile-image"><i class="ri-add-fill"></i></label>
+            </div>
+          </div>
+        </div>
+        <div class="create-inputs">
+          <div>
+            <input type="text" id="first-name" placeholder="First Name" required>
+          </div>
+          <div>
+            <input type="text" id="last-name" placeholder="Last Name" required>
+          </div>
+          <div>
+            <small id="error" style="color: rgb(167, 20, 20);text-align: left;"></small>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button id="submit-profile"><i class="ri-arrow-right-line" style="background: none;"></i></button>
+      </div>
+    </div>
+    
+  </section>
+  
+  <!-- Popup Modal -->
+  <div id="popup-modal" style="display: none;">
+    <div class="modal-content">
+      <p>This is your mobile number: <span id="mobile-number-display"></span></p>
+      <button id="continue-btn">Continue</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+  authDomain: "posts-c532d.firebaseapp.com",
+  projectId: "posts-c532d",
+  storageBucket: "posts-c532d.appspot.com",
+  messagingSenderId: "742123859279",
+  appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// Elements
+const profileImageInput = document.getElementById('profile-image');
+const imagePreview = document.getElementById('image-preview');
+const firstNameInput = document.getElementById('first-name');
+const lastNameInput = document.getElementById('last-name');
+const submitProfileBtn = document.getElementById('submit-profile');
+const popupModal = document.getElementById('popup-modal');
+const mobileNumberDisplay = document.getElementById('mobile-number-display');
+const continueBtn = document.getElementById('continue-btn');
+
+// Preview uploaded image
+profileImageInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      imagePreview.src = reader.result;
+      imagePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Submit profile
+submitProfileBtn.addEventListener('click', async () => {
+  const firstName = firstNameInput.value;
+  const lastName = lastNameInput.value;
+  const file = profileImageInput.files[0];
+
+  if (!firstName || !lastName || !file) {
+    document.getElementById('error').innerHTML = "<i class='ri-error-warning-line'></i> All fields are required";
+    // alert("All fields are required!");
+    return;
+  }
+
+  try {
+    const user = auth.currentUser;
+    const userDocRef = doc(db, "users", user.uid);
+
+    // Upload profile image to Firebase Storage
+    const storageRef = ref(storage, `profile-images/${user.uid}`);
+    await uploadBytes(storageRef, file);
+    const profileImageUrl = await getDownloadURL(storageRef);
+
+    // Update user profile in Firestore
+    await updateDoc(userDocRef, {
+      firstName: firstName,
+      lastName: lastName,
+      profileImageUrl: profileImageUrl,
+      profileCreated: true
+    });
+
+    // Fetch mobile number and display popup
+    const userDoc = await getDoc(userDocRef);
+    const mobileNumber = userDoc.data().mobileNumber;
+    mobileNumberDisplay.textContent = mobileNumber;
+
+    popupModal.style.display = 'block';
+  } catch (error) {
+    alert("Error: " + error.message);
+  }
+});
+
+// Continue to home page
+continueBtn.addEventListener('click', () => {
+  window.location.href = "chats.html"; // Redirect to home page
+});
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacts</title>
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link rel="stylesheet" href="CSS/contacts.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+  <header>
+    <div class="chat-container">
+      <div class="chats-nav">
+          <div>
+              <h2>Contacts</h2>
+          </div>
+          <div class="nav-links-1">
+              <div>
+                  <button title="Privacy"><i class="ri-lock-line"></i></button>
+              </div>
+              <div>
+                  <button title="Search"><i class="ri-search-line"></i></button>
+              </div>
+              <div>
+                  <button title="More"><i class="ri-more-2-fill"></i></button>
+              </div>
+          </div>
+      </div>
+   </div>
+   
+   <div class="search-container">
+     <i class="ri-search-line search-icon"></i>
+     <input type="text" id="search-input" class="search-input" placeholder="Search contacts...">
+   </div>
+
+   <div class="nav-links-2 floating" style="background:white;">
+        <a href="chats.html"><button  style="color:gray"><i class="ri-chat-3-line" ></i><span>Chats</span></button></a>
+        <a href="calls.html"><button style="color:gray"><i class="ri-phone-line"></i><span>Calls</span></button></a>
+        <a href="stories.html"><button style="color:gray"><i class="ri-meteor-line"></i><span>Stories</span></button></a>
+
+        <a href="contacts.html"><button class="active"><i class="ri-group-line"></i><span>Contacts</span></button></a>
+
+        <a href="settings.html"><button style="color:gray"><i class="ri-settings-5-line"></i><span>Settings</span></button></a>
+
+    </div>
+  </header>
+
+  <div class="action-buttons">
+    <div  class="actions-btn">
+        <button id="add-contact-btn">
+            <i class="ri-user-add-line"></i> Add Contact
+        </button>
+        <button id="create-group-btn">
+            <i class="ri-group-line"></i> Create Group
+        </button>
+    </div>
+  </div>
+
+  <!-- Favorites Section -->
+  <div class="favorites-section" id="favorites-section" style="display: none;">
+    <h3>Favorites</h3>
+    <div class="favorites-grid" id="favorites-grid"></div>
+  </div>
+
+  <div id="contacts-list"></div>
+
+  <!-- Contact Info Panel -->
+  <div class="modal-overlay" id="panel-overlay"></div>
+  <div class="contact-info-panel" id="contact-info-panel">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+        <h3>Contact Info</h3>
+        <button class="panel-close" id="close-panel">&times;</button>
+    </div>
+    <div class="panel-body">
+        <div class="profile-section">
+            <img id="panel-profile-image" src="images/default-profile.png" alt="Profile">
+            <h2 id="panel-contact-name">Name</h2>
+            <p id="panel-contact-status">Hey there!</p>
+        </div>
+        
+        <div class="contact-details">
+            <div class="detail-item">
+                <i class="ri-phone-line"></i>
+                <span class="detail-value" id="panel-contact-phone">+1 234 567 890</span>
+            </div>
+            <div class="detail-item">
+                <i class="ri-mail-line"></i>
+                <span class="detail-value" id="panel-contact-email">email@example.com</span>
+            </div>
+            <div class="detail-item">
+                <i class="ri-calendar-line"></i>
+                <span class="detail-value" id="panel-contact-added">Added recently</span>
+            </div>
+        </div>
+    </div>
+    <div class="panel-actions">
+        <button class="panel-action-btn primary" id="panel-message-btn">
+            <i class="ri-message-3-line"></i> Message
+        </button>
+        <button class="panel-action-btn secondary" id="panel-call-btn">
+            <i class="ri-phone-line"></i> Call
+        </button>
+        <button class="panel-action-btn danger" id="panel-delete-btn">
+            <i class="ri-delete-bin-line"></i>
+        </button>
+    </div>
+  </div>
+
+  <!-- Add Contact Full Page Keypad -->
+  <div class="modal-overlay" id="keypad-modal">
+    <div class="keypad-header">
+        <button class="keypad-cancel-btn" id="keypad-cancel">Cancel</button>
+        <span class="keypad-title">Add Contact</span>
+        <button class="keypad-add-btn" id="keypad-add" disabled>Add</button>
+    </div>
+    
+    <div class="keypad-display">
+        <div class="keypad-number" id="keypad-display">
+            <span id="phone-number"></span>
+            <span class="cursor"></span>
+        </div>
+        <div class="keypad-error" id="keypad-error"></div>
+        <div class="keypad-hint">Enter 6-digit mobile number</div>
+    </div>
+    
+    <div class="keypad-container">
+        <div class="keypad">
+            <button class="keypad-btn" data-digit="1">
+                <span class="digit">1</span>
+            </button>
+            <button class="keypad-btn" data-digit="2">
+                <span class="digit">2</span>
+                <span class="letters">ABC</span>
+            </button>
+            <button class="keypad-btn" data-digit="3">
+                <span class="digit">3</span>
+                <span class="letters">DEF</span>
+            </button>
+            <button class="keypad-btn" data-digit="4">
+                <span class="digit">4</span>
+                <span class="letters">GHI</span>
+            </button>
+            <button class="keypad-btn" data-digit="5">
+                <span class="digit">5</span>
+                <span class="letters">JKL</span>
+            </button>
+            <button class="keypad-btn" data-digit="6">
+                <span class="digit">6</span>
+                <span class="letters">MNO</span>
+            </button>
+            <button class="keypad-btn" data-digit="7">
+                <span class="digit">7</span>
+                <span class="letters">PQRS</span>
+            </button>
+            <button class="keypad-btn" data-digit="8">
+                <span class="digit">8</span>
+                <span class="letters">TUV</span>
+            </button>
+            <button class="keypad-btn" data-digit="9">
+                <span class="digit">9</span>
+                <span class="letters">WXYZ</span>
+            </button>
+            <button class="keypad-btn star">
+                <span class="digit">*</span>
+            </button>
+            <button class="keypad-btn zero" data-digit="0">
+                <span class="digit">0</span>
+            </button>
+            <button class="keypad-btn backspace" id="keypad-backspace">
+                <i class="ri-delete-back-line"></i>
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Create Group Slide-Up Modal -->
+  <div id="create-group-modal" class="create-group-modal">
+    <div class="create-group-header">
+        <button id="close-group-modal"><i class="ri-close-line"></i></button>
+        <h3>Create Group</h3>
+        <button id="create-group-submit">Create</button>
+    </div>
+    <div class="create-group-content">
+      <div class="group-image-section">
+        <div class="group-image-container" id="group-image-container">
+          <img id="group-preview-image" src="images/default-profile.png" alt="Group Image">
+          <div class="group-image-overlay">
+            <i class="ri-camera-fill"></i>
+          </div>
+        </div>
+        <input type="file" id="group-image-input" accept="image/*" style="display: none;">
+        <span class="group-image-hint">Tap to add group photo</span>
+      </div>
+      <div class="group-name-section">
+        <input type="text" id="group-name-input" placeholder="Group Name">
+      </div>
+      <div class="group-members-section">
+        <p>Select members:</p>
+        <div id="group-members-list" class="group-members-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, query, where, getDocs, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+      authDomain: "posts-c532d.firebaseapp.com",
+      projectId: "posts-c532d",
+      storageBucket: "posts-c532d.appspot.com",
+      messagingSenderId: "742123859279",
+      appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // DOM Elements
+    const addContactBtn = document.getElementById("add-contact-btn");
+    const contactsList = document.getElementById("contacts-list");
+    const searchInput = document.getElementById("search-input");
+    const panelOverlay = document.getElementById("panel-overlay");
+    
+    // Contact Info Panel
+    const contactInfoPanel = document.getElementById("contact-info-panel");
+    const closePanel = document.getElementById("close-panel");
+    const panelHandle = document.querySelector(".panel-handle");
+
+    let currentUser = null;
+    let allContacts = [];
+    let selectedContactData = null;
+
+    // Search functionality
+    searchInput.addEventListener("input", function(e) {
+      const searchTerm = e.target.value.toLowerCase().trim();
+      filterContacts(searchTerm);
+    });
+
+    function filterContacts(searchTerm) {
+      if (!searchTerm) {
+        renderContacts(allContacts);
+        return;
+      }
+      
+      const filteredContacts = allContacts.filter(function(contact) {
+        const name = (contact.name || "").toLowerCase();
+        const mobile = (contact.mobile || "").toLowerCase();
+        return name.includes(searchTerm) || mobile.includes(searchTerm);
+      });
+      
+      renderContacts(filteredContacts);
+    }
+
+    function renderContacts(contacts) {
+      contactsList.innerHTML = "";
+      
+      if (contacts.length === 0) {
+        contactsList.innerHTML = `
+            <div class="no-contacts">
+                <i class="ri-user-search-line"></i>
+                <h3>${searchInput.value ? 'No contacts found' : 'No contacts yet'}</h3>
+                <p>${searchInput.value ? 'Try a different search' : 'Add your first contact to get started'}</p>
+            </div>`;
+        return;
+      }
+
+      // Sort contacts alphabetically
+      contacts.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+
+      for (const contact of contacts) {
+        const contactDiv = document.createElement("div");
+        contactDiv.classList.add("contact");
+        contactDiv.dataset.id = contact.id;
+        
+        contactDiv.innerHTML = `
+            <div class="call">
+                <div class="call_header">
+                    <img src="${contact.image || 'images/default-profile.png'}" alt="${contact.name}">
+                    <div class="call-name">
+                        <h2>${contact.name}</h2>
+                        <div class="call-missed">
+                            <p>${contact.mobile}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="call-time">
+                    <button class="contact-action-btn message" data-id="${contact.id}" title="Message">
+                        <i class="ri-message-3-line"></i>
+                        <span class="unread-badge" style="display:none;">0</span>
+                    </button>
+
+                    <button class="contact-action-btn call" data-id="${contact.id}" title="Call">
+                        <i class="ri-phone-line"></i>
+                    </button>
+                    <button class="contact-action-btn video" data-id="${contact.id}" title="Video Call">
+                        <i class="ri-vidicon-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <div class="quick-action view-profile" data-id="${contact.id}">
+                    <i class="ri-user-line"></i>
+                    <span>View</span>
+                </div>
+                <div class="quick-action add-favorite" data-id="${contact.id}">
+                    <i class="ri-star-line"></i>
+                    <span>Favorite</span>
+                </div>
+                <div class="quick-action" data-id="${contact.id}">
+                    <i class="ri-share-forward-line"></i>
+                    <span>Share</span>
+                </div>
+                <div class="quick-action delete-contact" data-id="${contact.id}">
+                    <i class="ri-delete-bin-line"></i>
+                    <span>Delete</span>
+                </div>
+            </div>`;
+
+
+        // Unread badge (computed in loadContacts)
+        const unreadBadge = contactDiv.querySelector(".unread-badge");
+        const unreadCount = typeof contact.unreadCount === 'number' ? contact.unreadCount : 0;
+        // Show badge immediately (before user opens chat)
+        if (unreadBadge) {
+          if (unreadCount > 0) {
+            unreadBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            unreadBadge.style.display = 'flex';
+          } else {
+            unreadBadge.style.display = 'none';
+            unreadBadge.textContent = '0';
+          }
+        }
+
+
+        const messageBtn = contactDiv.querySelector(".message");
+
+        messageBtn.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+            startChat(contact.id, contact);
+        });
+
+        const callBtn = contactDiv.querySelector(".call");
+        callBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            initiateCall(contact.id, contact);
+        });
+
+        const videoBtn = contactDiv.querySelector(".video");
+        videoBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            initiateVideoCall(contact.id, contact);
+        });
+
+        const viewProfile = contactDiv.querySelector(".view-profile");
+        viewProfile.addEventListener("click", () => showContactPanel(contact));
+
+        const deleteContact = contactDiv.querySelector(".delete-contact");
+        deleteContact.addEventListener("click", () => deleteContactById(contact.id, contact.name));
+
+        contactDiv.addEventListener("click", () => showContactPanel(contact));
+
+        contactsList.appendChild(contactDiv);
+      }
+    }
+
+    async function loadContacts() {
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const contacts = userData.contacts || [];
+          const favorites = userData.favorites || [];
+
+          // Fetch all messages once and compute unread counts per contact
+          // NOTE: assumes your chat message docs store:
+          // - senderId, receiverId, read (boolean), and timestamp
+          // If your schema differs, adjust below.
+          const allMessagesSnap = await (async () => {
+            try {
+              const msgs = await getDocs(collection(db, "messages"));
+              return msgs;
+            } catch (e) {
+              return null;
+            }
+          })();
+
+          const unreadByContact = {};
+          if (allMessagesSnap) {
+            allMessagesSnap.forEach(msgDoc => {
+              const msg = msgDoc.data();
+              // unread: message is addressed to current user and marked unread
+              if (msg && msg.receiverId === currentUser.uid && !msg.read) {
+                const fromId = msg.senderId;
+                if (!unreadByContact[fromId]) unreadByContact[fromId] = 0;
+                unreadByContact[fromId] += 1;
+              }
+            });
+          }
+
+          allContacts = [];
+
+          for (const contactId of contacts) {
+            const contactDoc = await getDoc(doc(db, "users", contactId));
+            if (contactDoc.exists()) {
+              const contactData = contactDoc.data();
+              allContacts.push({
+                id: contactId,
+                name: contactData.firstName + " " + contactData.lastName,
+                mobile: contactData.mobileNumber || "",
+                image: contactData.profileImageUrl,
+                email: contactData.email || "",
+                status: contactData.status || "Hey there!",
+                isFavorite: favorites.includes(contactId),
+                unreadCount: unreadByContact[contactId] || 0
+              });
+            }
+          }
+
+          renderFavorites(allContacts.filter(c => c.isFavorite));
+          renderContacts(allContacts);
+        }
+      } catch (error) {
+        console.error("Error loading contacts:", error);
+        contactsList.innerHTML = "<div class='no-contacts'>Error loading contacts</div>";
+      }
+    }
+
+
+    function renderFavorites(favorites) {
+        const favoritesSection = document.getElementById("favorites-section");
+        const favoritesGrid = document.getElementById("favorites-grid");
+        
+        if (favorites.length === 0) {
+            favoritesSection.style.display = "none";
+            return;
+        }
+        
+        favoritesSection.style.display = "block";
+        favoritesGrid.innerHTML = "";
+        
+        favorites.forEach(contact => {
+            const favDiv = document.createElement("div");
+            favDiv.className = "favorite-item";
+            favDiv.innerHTML = `
+                <img src="${contact.image || 'images/default-profile.png'}" alt="${contact.name}" class="favorite-avatar">
+                <span class="favorite-name">${contact.name.split(' ')[0]}</span>
+            `;
+            favDiv.addEventListener("click", () => showContactPanel(contact));
+            favoritesGrid.appendChild(favDiv);
+        });
+    }
+
+    function showContactPanel(contact) {
+        selectedContactData = contact;
+        
+        document.getElementById("panel-profile-image").src = contact.image || 'images/default-profile.png';
+        document.getElementById("panel-contact-name").textContent = contact.name;
+        document.getElementById("panel-contact-status").textContent = contact.status || "Hey there!";
+        document.getElementById("panel-contact-phone").textContent = contact.mobile || "Not available";
+        document.getElementById("panel-contact-email").textContent = contact.email || "Not available";
+        
+        contactInfoPanel.classList.add("show");
+        panelOverlay.classList.add("show");
+    }
+
+    function hideContactPanel() {
+        contactInfoPanel.classList.remove("show");
+        panelOverlay.classList.remove("show");
+        selectedContactData = null;
+    }
+
+    closePanel.addEventListener("click", hideContactPanel);
+    panelOverlay.addEventListener("click", hideContactPanel);
+    panelHandle.addEventListener("click", hideContactPanel);
+
+    document.getElementById("panel-message-btn").addEventListener("click", () => {
+        if (selectedContactData) {
+            startChat(selectedContactData.id, selectedContactData);
+            hideContactPanel();
+        }
+    });
+
+    document.getElementById("panel-call-btn").addEventListener("click", () => {
+        if (selectedContactData) {
+            initiateCall(selectedContactData.id, selectedContactData);
+            hideContactPanel();
+        }
+    });
+
+    document.getElementById("panel-delete-btn").addEventListener("click", () => {
+        if (selectedContactData) {
+            deleteContactById(selectedContactData.id, selectedContactData.name);
+            hideContactPanel();
+        }
+    });
+
+    // Add Contact Keypad Modal
+    const keypadModal = document.getElementById("keypad-modal");
+    const keypadCancel = document.getElementById("keypad-cancel");
+    const keypadAdd = document.getElementById("keypad-add");
+    const keypadBackspace = document.getElementById("keypad-backspace");
+    const phoneNumberDisplay = document.getElementById("phone-number");
+    const keypadError = document.getElementById("keypad-error");
+    let keypadNumber = "";
+
+    function showKeypadModal() {
+        keypadNumber = "";
+        updateKeypadDisplay();
+        keypadError.textContent = "";
+        keypadModal.classList.add("show");
+    }
+
+    function hideKeypadModal() {
+        keypadModal.classList.remove("show");
+        keypadNumber = "";
+    }
+
+    function updateKeypadDisplay() {
+        let formatted = keypadNumber;
+        if (keypadNumber.length > 3) {
+            formatted = keypadNumber.slice(0, 3) + "-" + keypadNumber.slice(3);
+        }
+        phoneNumberDisplay.textContent = formatted;
+        keypadAdd.disabled = keypadNumber.length !== 6;
+    }
+
+    document.querySelectorAll('.keypad-btn[data-digit]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (keypadNumber.length < 6) {
+                keypadNumber += btn.dataset.digit;
+                updateKeypadDisplay();
+                keypadError.textContent = "";
+            }
+        });
+    });
+
+    keypadBackspace.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (keypadNumber.length > 0) {
+            keypadNumber = keypadNumber.slice(0, -1);
+            updateKeypadDisplay();
+        }
+    });
+
+    // Add contact button - FIXED to handle multiple mobile formats
+    keypadAdd.addEventListener('click', async () => {
+        if (keypadNumber.length !== 6) return;
+        
+        // Format mobile number with hyphen
+        const formattedMobileNumber = keypadNumber.slice(0, 3) + "-" + keypadNumber.slice(3);
+        
+        try {
+            const usersRef = collection(db, "users");
+            
+            // Try different formats
+            let q = query(usersRef, where("mobileNumber", "==", formattedMobileNumber));
+            let querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                q = query(usersRef, where("mobileNumber", "==", keypadNumber));
+                querySnapshot = await getDocs(q);
+            }
+            
+            if (querySnapshot.empty) {
+                q = query(usersRef, where("mobileNumber", "==", "+1" + formattedMobileNumber));
+                querySnapshot = await getDocs(q);
+            }
+
+            if (!querySnapshot.empty) {
+                const contactDoc = querySnapshot.docs[0];
+                const contactData = contactDoc.data();
+                const userRef = doc(db, "users", currentUser.uid);
+                
+                const userDoc = await getDoc(userRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const contacts = userData.contacts || [];
+                    if (!contacts.includes(contactDoc.id)) {
+                        await updateDoc(userRef, { contacts: arrayUnion(contactDoc.id) });
+                        alert("Contact added successfully: " + contactData.firstName + " " + contactData.lastName);
+                        hideKeypadModal();
+                        loadContacts();
+                    } else {
+                        keypadError.textContent = "Contact already exists!";
+                    }
+                }
+            } else {
+                keypadError.textContent = "Mobile number not found!";
+            }
+        } catch (error) {
+            console.error("Error adding contact:", error);
+            keypadError.textContent = "Error adding contact";
+        }
+    });
+
+    addContactBtn.addEventListener("click", showKeypadModal);
+    keypadCancel.addEventListener("click", hideKeypadModal);
+
+    async function deleteContactById(contactId, contactName) {
+      const confirmation = confirm("Are you sure you want to delete " + contactName + " from your contacts?");
+      if (confirmation) {
+        const userRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const updatedContacts = userData.contacts ? userData.contacts.filter(function(id) { return id !== contactId; }) : [];
+          
+          await updateDoc(userRef, { contacts: updatedContacts });
+
+          alert("Contact removed successfully.");
+          loadContacts();
+        }
+      }
+    }
+
+    async function startChat(contactId, contactData) {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+        
+        if (!userData.chats || !userData.chats.find(function(chat) { return chat.chatId === chatId; })) {
+          const userRef = doc(db, "users", currentUser.uid);
+          const contactRef = doc(db, "users", contactId);
+          
+          const newChat = { chatId: chatId, contactId: contactId };
+          const existingChats = userData.chats || [];
+          
+          await updateDoc(userRef, { chats: [...existingChats, newChat] });
+          await updateDoc(contactRef, { chats: arrayUnion({ chatId: chatId, contactId: currentUser.uid }) });
+          await setDoc(doc(db, "chats", chatId), { messages: [] });
+        }
+        
+        window.location.href = "chatting.html?contactId=" + contactId;
+      }
+    }
+
+    async function initiateCall(contactId, contactData) {
+      const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+      
+      await updateDoc(doc(db, "users", contactId), {
+        incomingCall: {
+          from: currentUser.uid,
+          callerName: currentUser.firstName + " " + currentUser.lastName,
+          callerImage: currentUser.profileImageUrl || "images/default-profile.png",
+          chatId: chatId,
+          callType: "audio"
+        }
+      });
+
+      window.location.href = "calling.html?contactId=" + contactId + "&chatId=" + chatId;
+    }
+
+    async function initiateVideoCall(contactId, contactData) {
+      const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+      
+      await updateDoc(doc(db, "users", contactId), {
+        incomingCall: {
+          from: currentUser.uid,
+          callerName: currentUser.firstName + " " + currentUser.lastName,
+          callerImage: currentUser.profileImageUrl || "images/default-profile.png",
+          chatId: chatId,
+          callType: "video"
+        }
+      });
+
+      window.location.href = "calling.html?contactId=" + contactId + "&chatId=" + chatId + "&video=true";
+    }
+
+    function listenForIncomingCalls() {
+      if (!currentUser) return;
+      
+      const userRef = doc(db, "users", currentUser.uid);
+      onSnapshot(userRef, function(snapshot) {
+        const userData = snapshot.data();
+        if (userData && userData.incomingCall) {
+          const callData = userData.incomingCall;
+          showIncomingCallPopup(callData);
+        }
+      });
+    }
+
+    function showIncomingCallPopup(callData) {
+      const existingPopup = document.querySelector(".ringing-popup");
+      if (existingPopup) existingPopup.remove();
+      
+      const ringingPopup = document.createElement("div");
+      ringingPopup.classList.add("ringing-popup");
+      ringingPopup.innerHTML = `
+        <div class="call-container">
+            <img src="${callData.callerImage || 'images/default-profile.png'}" alt="Caller Image">
+            <h3>${callData.callerName}</h3>
+            <p>${callData.callType === 'video' ? 'Incoming video call...' : 'Incoming audio call...'}</p>
+            <div class="call-buttons">
+                <button class="accept-call"><i class="ri-phone-fill"></i> Accept</button>
+                <button class="refuse-call"><i class="ri-phone-off-line"></i> Decline</button>
+            </div>
+        </div>`;
+
+      document.body.appendChild(ringingPopup);
+
+      const acceptCallBtn = ringingPopup.querySelector(".accept-call");
+      acceptCallBtn.addEventListener("click", async function() {
+        await updateDoc(doc(db, "users", currentUser.uid), { incomingCall: null });
+        ringingPopup.remove();
+        window.location.href = "receiving-call.html?chatId=" + callData.chatId + "&callerId=" + callData.from + (callData.callType === 'video' ? '&video=true' : '');
+      });
+
+      const refuseCallBtn = ringingPopup.querySelector(".refuse-call");
+      refuseCallBtn.addEventListener("click", async function() {
+        await updateDoc(doc(db, "users", currentUser.uid), { incomingCall: null });
+        ringingPopup.remove();
+      });
+    }
+
+    // Create Group
+    const createGroupBtn = document.getElementById("create-group-btn");
+    const createGroupModal = document.getElementById("create-group-modal");
+    const closeGroupModal = document.getElementById("close-group-modal");
+    const createGroupSubmit = document.getElementById("create-group-submit");
+    const groupNameInput = document.getElementById("group-name-input");
+    const groupMembersList = document.getElementById("group-members-list");
+    const groupImageContainer = document.getElementById("group-image-container");
+    const groupImageInput = document.getElementById("group-image-input");
+    const groupPreviewImage = document.getElementById("group-preview-image");
+
+    let selectedGroupMembers = new Set();
+    let selectedGroupImage = null;
+
+    groupImageContainer.addEventListener("click", () => groupImageInput.click());
+
+    groupImageInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        selectedGroupImage = file;
+        const reader = new FileReader();
+        reader.onload = (event) => { groupPreviewImage.src = event.target.result; };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    createGroupBtn.addEventListener("click", () => {
+      createGroupModal.classList.add("show");
+      renderGroupMembers();
+    });
+
+    closeGroupModal.addEventListener("click", () => {
+      createGroupModal.classList.remove("show");
+      resetGroupForm();
+    });
+
+    function resetGroupForm() {
+      groupNameInput.value = "";
+      selectedGroupMembers.clear();
+      selectedGroupImage = null;
+      groupPreviewImage.src = "images/default-profile.png";
+      createGroupSubmit.disabled = true;
+      createGroupSubmit.textContent = "Create";
+    }
+
+    function renderGroupMembers() {
+      groupMembersList.innerHTML = "";
+      
+      for (const contact of allContacts) {
+        const memberDiv = document.createElement("div");
+        memberDiv.className = "group-member-item";
+        const isSelected = selectedGroupMembers.has(contact.id);
+        memberDiv.innerHTML = `
+          <img src="${contact.image || 'images/default-profile.png'}" alt="${contact.name}">
+          <span>${contact.name}</span>
+          <input type="checkbox" data-id="${contact.id}" ${isSelected ? 'checked' : ''}>
+        `;
+        
+        const checkbox = memberDiv.querySelector("input");
+        checkbox.addEventListener("change", function() {
+          if (this.checked) {
+            selectedGroupMembers.add(contact.id);
+          } else {
+            selectedGroupMembers.delete(contact.id);
+          }
+          updateCreateButton();
+        });
+        
+        groupMembersList.appendChild(memberDiv);
+      }
+    }
+
+    function updateCreateButton() {
+      const hasName = groupNameInput.value.trim().length > 0;
+      const hasMembers = selectedGroupMembers.size > 0;
+      createGroupSubmit.disabled = !(hasName && hasMembers);
+    }
+
+    groupNameInput.addEventListener("input", updateCreateButton);
+
+    createGroupSubmit.addEventListener("click", async () => {
+      const groupName = groupNameInput.value.trim();
+      if (!groupName || selectedGroupMembers.size === 0) return;
+
+      createGroupSubmit.disabled = true;
+      createGroupSubmit.textContent = "Creating...";
+
+      try {
+        const groupId = "group_" + Date.now();
+        const memberIds = Array.from(selectedGroupMembers);
+        
+        let groupImageUrl = null;
+        
+        if (selectedGroupImage) {
+          try {
+            const storageRef = ref(storage, "group_images/" + groupId + "_" + Date.now());
+            const snapshot = await uploadBytes(storageRef, selectedGroupImage);
+            groupImageUrl = await getDownloadURL(snapshot.ref);
+          } catch (imageError) {
+            console.error("Error uploading group image:", imageError);
+          }
+        }
+        
+        await setDoc(doc(db, "groups", groupId), {
+          groupId: groupId,
+          groupName: groupName,
+          adminIds: [currentUser.uid],
+          memberIds: [currentUser.uid, ...memberIds],
+          createdBy: currentUser.uid,
+          createdAt: Date.now(),
+          groupImageUrl: groupImageUrl
+        });
+
+        for (const memberId of [currentUser.uid, ...memberIds]) {
+          const memberRef = doc(db, "users", memberId);
+          const memberDoc = await getDoc(memberRef);
+          if (memberDoc.exists()) {
+            const memberData = memberDoc.data();
+            const existingGroupChats = memberData.groupChats || [];
+            await updateDoc(memberRef, { groupChats: [...existingGroupChats, groupId] });
+          }
+        }
+
+        alert("Group created successfully!");
+        createGroupModal.classList.remove("show");
+        resetGroupForm();
+        
+        window.location.href = "chatting.html?groupId=" + groupId;
+        
+      } catch (error) {
+        console.error("Error creating group:", error);
+        alert("Error creating group: " + error.message);
+        createGroupSubmit.disabled = false;
+        createGroupSubmit.textContent = "Create";
+      }
+    });
+
+    // Initialize
+    onAuthStateChanged(auth, async function(user) {
+      if (user) {
+        currentUser = user;
+        
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            currentUser.firstName = userData.firstName || "";
+            currentUser.lastName = userData.lastName || "";
+            currentUser.profileImageUrl = userData.profileImageUrl || "images/default-profile.png";
+        }
+        
+        await loadContacts();
+        listenForIncomingCalls();
+      } else {
+        window.location.href = "auth.html";
+      }
+    });
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

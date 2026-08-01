@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calling</title>
+  <link rel="stylesheet" href="CSS/call.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <style>
+    body { 
+      background: radial-gradient(circle at 20% 10%, rgba(102,126,234,0.25) 0%, rgba(26,26,46,1) 45%),
+                  linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 18px;
+    }
+
+    .calling-container { 
+      text-align: center; 
+      padding: 36px 24px;
+      width: min(520px, 96vw);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 22px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .caller-image { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #4a90e2; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    .caller-name { font-size: 28px; margin-bottom: 10px; }
+    .calling-status { font-size: 18px; color: #888; margin-bottom: 50px; }
+    .call-actions { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 12px; }
+    .call-btn {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      color: white;
+      position: relative;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .call-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 18px 45px rgba(0,0,0,0.35); }
+
+    .end-call-btn { background: rgba(231,76,60,0.95); }
+    .mute-btn { background: rgba(52,73,94,0.95); }
+    .speaker-btn { background: rgba(52,73,94,0.95); }
+    .call-btn i { font-size: 24px; }
+
+    .mute-btn.active { background-color: #e74c3c; }
+    .speaker-btn.active { background-color: #27ae60; }
+    #timer { font-size: 20px; margin-top: 18px; color: #8fb3ff; font-weight: 700; }
+
+    .glow-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle at 30% 30%, rgba(102,126,234,0.35) 0%, rgba(102,126,234,0) 60%);
+      filter: blur(2px);
+      opacity: 0.85;
+    }
+    
+    /* Network Quality Indicator */
+    .network-indicator {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,0,0,0.3);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+    .network-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 16px;
+    }
+    .network-bar {
+      width: 4px;
+      background: #666;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+    .network-bar:nth-child(1) { height: 4px; }
+    .network-bar:nth-child(2) { height: 8px; }
+    .network-bar:nth-child(3) { height: 12px; }
+    .network-bar:nth-child(4) { height: 16px; }
+    
+    .network-good .network-bar { background: #27ae60; }
+    .network-medium .network-bar:nth-child(4) { background: #f39c12; }
+    .network-medium .network-bar:nth-child(3) { background: #f39c12; }
+    .network-bad .network-bar:nth-child(4) { background: #e74c3c; }
+    .network-bad .network-bar:nth-child(3) { background: #e74c3c; }
+    .network-bad .network-bar:nth-child(2) { background: #e74c3c; }
+    
+    .network-good .network-text { color: #27ae60; }
+    .network-medium .network-text { color: #f39c12; }
+    .network-bad .network-text { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <!-- Network Quality Indicator -->
+  <div class="network-indicator" id="network-indicator">
+    <div class="network-bars">
+      <div class="network-bar"></div>
+      <div class="network-bar"></div>
+      <div class="network-bar"></div>
+      <div class="network-bar"></div>
+    </div>
+    <span class="network-text">Checking...</span>
+  </div>
+
+  <div class="calling-container">
+    <img id="contact-image" src="images/default-profile.png" alt="Contact Image" class="caller-image">
+    <h2 id="contact-name" class="caller-name">Calling...</h2>
+    <p id="call-status" class="calling-status">Connecting...</p>
+    <div class="call-actions">
+      <button id="mute-btn" class="call-btn mute-btn" title="Mute"><i class="ri-mic-line"></i></button>
+      <button id="speaker-btn" class="call-btn speaker-btn" title="Speaker"><i class="ri-volume-up-line"></i></button>
+      <button id="end-call-btn" class="call-btn end-call-btn" title="End Call"><i class="ri-phone-line"></i></button>
+    </div>
+    <div id="timer"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+      authDomain: "posts-c532d.firebaseapp.com",
+      projectId: "posts-c532d",
+      storageBucket: "posts-c532d.appspot.com",
+      messagingSenderId: "742123859279",
+      appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let peerConnection = null;
+    let localStream = null;
+    let isMuted = false;
+    let isSpeakerOn = false;
+    let callTimer = null;
+    let callDuration = 0;
+    let callStartTime = null;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const contactId = urlParams.get("contactId");
+    const chatId = urlParams.get("chatId");
+
+    // If this is a video call, show the dedicated video-call UI.
+    // (We keep existing WebRTC logic here; UI helps the user see remote video.)
+    const isVideoPage = urlParams.get("video") === "true";
+    if (isVideoPage && !document.getElementById('video-canvas')) {
+      // No-op: calling.html already has existing layout; separate interface can be integrated later.
+    }
+
+    if (!contactId) {
+      alert("No contact specified");
+      window.location.href = "chats.html";
+    }
+
+    const iceServers = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }] };
+
+    // Network quality monitoring (improved)
+    function monitorNetworkQuality() {
+      if (!peerConnection) return;
+
+      const indicator = document.getElementById('network-indicator');
+      if (!indicator) return;
+
+      peerConnection.getStats().then(stats => {
+        let packetsLost = 0;
+        let packetsReceived = 0;
+        let roundTripTime = 0;
+        
+        stats.forEach(report => {
+          // inbound audio stats (most reliable for loss)
+          if (report.type === 'inbound-rtp' && report.kind === 'audio') {
+            packetsLost = report.packetsLost || 0;
+            packetsReceived = report.packetsReceived || 0;
+          }
+          // candidate pair RTT is often present when succeeded
+          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+            roundTripTime = report.currentRoundTripTime || 0;
+          }
+        });
+
+        const total = packetsLost + packetsReceived;
+        const lossRate = total > 0 ? (packetsLost / total) * 100 : 0;
+
+        // Determine network quality
+        let quality = 'Poor';
+        let className = 'network-bad';
+
+        if (lossRate < 1 && roundTripTime < 0.3) {
+          quality = 'Excellent';
+          className = 'network-good';
+        } else if (lossRate < 5 && roundTripTime < 0.5) {
+          quality = 'Good';
+          className = 'network-medium';
+        } else if (lossRate < 10 && roundTripTime < 1) {
+          quality = 'Fair';
+          className = 'network-medium';
+        }
+
+        indicator.classList.remove('network-good', 'network-medium', 'network-bad');
+        indicator.classList.add(className);
+
+        const textEl = indicator.querySelector('.network-text');
+        if (textEl) textEl.textContent = `${quality}`;
+
+        // Adaptive behavior: if very bad, stop video tracks to save bandwidth.
+        // (Audio-only fallback keeps call alive.)
+        try {
+          const videoTracks = localStream ? localStream.getVideoTracks() : [];
+          if (quality === 'Poor' && videoTracks && videoTracks.length > 0) {
+            videoTracks.forEach(t => t.enabled = false);
+          }
+          if ((quality === 'Excellent' || quality === 'Good') && videoTracks && videoTracks.length > 0) {
+            videoTracks.forEach(t => t.enabled = true);
+          }
+        } catch (e) {}
+      });
+    }
+
+
+    // Start monitoring network quality
+    setInterval(monitorNetworkQuality, 2000);
+
+    async function initCall() {
+      try {
+        const contactDoc = await getDoc(doc(db, "users", contactId));
+        if (contactDoc.exists()) {
+          const contactData = contactDoc.data();
+          document.getElementById("contact-name").textContent = contactData.firstName + " " + contactData.lastName;
+          document.getElementById("contact-image").src = contactData.profileImageUrl || "images/default-profile.png";
+        }
+
+        const isVideo = urlParams.get("video") === "true";
+
+        // Request media access.
+        // If video source fails (no webcam / permission), fall back to audio-only.
+        try {
+          localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo });
+        } catch (e) {
+          if (isVideo) {
+            console.warn('Video source failed, falling back to audio:', e);
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          } else {
+            throw e;
+          }
+        }
+        peerConnection = new RTCPeerConnection(iceServers);
+        
+        localStream.getTracks().forEach(function(track) {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        peerConnection.onicecandidate = function(event) {
+          if (event.candidate) {
+            updateDoc(doc(db, "calls", chatId), {
+              ["candidates." + currentUser.uid]: { type: "candidate", candidate: event.candidate.toJSON(), timestamp: Date.now() }
+            });
+          }
+        };
+
+        peerConnection.ontrack = function(event) {
+          console.log("Received remote track:", event.track);
+          const remoteAudio = document.createElement("audio");
+          remoteAudio.id = "remote-audio";
+          remoteAudio.autoplay = true;
+          remoteAudio.playsInline = true;
+          remoteAudio.srcObject = event.streams[0];
+          document.body.appendChild(remoteAudio);
+          
+          // Set initial speaker state
+          if (isSpeakerOn) {
+            remoteAudio.setSinkId('default').catch(e => console.log('Speaker not available'));
+          }
+          
+          remoteAudio.play().catch(e => console.error("Error playing remote audio:", e));
+        };
+
+        peerConnection.onconnectionstatechange = function() {
+          console.log("Connection state:", peerConnection.connectionState);
+          if (peerConnection.connectionState === "connected") {
+            document.getElementById("call-status").textContent = "Connected";
+            callStartTime = Date.now()
+            startCallTimer();
+            monitorNetworkQuality();
+          } else if (peerConnection.connectionState === "disconnected" || peerConnection.connectionState === "failed") {
+            endCall();
+          }
+        };
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+
+        await setDoc(doc(db, "calls", chatId), {
+          offer: offer,
+          callerId: currentUser.uid,
+          calleeId: contactId,
+          status: "calling",
+          createdAt: Date.now()
+        });
+
+        const callDocRef = doc(db, "calls", chatId);
+        onSnapshot(callDocRef, async function(snapshot) {
+          const data = snapshot.data()
+          if (data && data.answer) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            document.getElementById("call-status").textContent = "Connected";
+          }
+          if (data && data.status === "rejected") {
+            document.getElementById("call-status").textContent = "Call rejected";
+            saveCallHistory("missed", 0);
+            setTimeout(endCall, 2000);
+          }
+          if (data && data.status === "ended") {
+            endCall();
+          }
+        });
+
+        onSnapshot(callDocRef, async function(snapshot) {
+          const data = snapshot.data()
+          if (data && data.calleeCandidates) {
+            for (const key in data.calleeCandidates) {
+              if (key !== currentUser.uid && data.calleeCandidates[key].candidate) {
+                try {
+                  await peerConnection.addIceCandidate(new RTCIceCandidate(data.calleeCandidates[key].candidate));
+                } catch (e) { console.error("Error adding ICE candidate:", e); }
+              }
+            }
+          }
+        });
+      } catch (error) {
+        console.error("Error initializing call:", error);
+        document.getElementById("call-status").textContent = "Failed to connect";
+        alert("Failed to start call: " + error.message);
+      }
+    }
+
+    function startCallTimer() {
+      callTimer = setInterval(function() {
+        callDuration++;
+        const minutes = Math.floor(callDuration / 60);
+        const seconds = callDuration % 60;
+        document.getElementById("timer").textContent = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+      }, 1000);
+    }
+
+    async function saveCallHistory(status, duration) {
+      try {
+        await addDoc(collection(db, "users", currentUser.uid, "callHistory"), {
+          contactId: contactId,
+          type: "audio",
+          direction: "outgoing",
+          status: status,
+          duration: duration,
+          timestamp: Date.now()
+        });
+
+        const contactDoc = await getDoc(doc(db, "users", contactId));
+        if (contactDoc.exists()) {
+          await addDoc(collection(db, "users", contactId, "callHistory"), {
+            contactId: currentUser.uid,
+            type: "audio",
+            direction: "incoming",
+            status: status,
+            duration: duration,
+            timestamp: Date.now()
+          });
+        }
+      } catch (error) {
+        console.error("Error saving call history:", error);
+      }
+    }
+
+    async function endCall() {
+      if (localStream) localStream.getTracks().forEach(function(track) { track.stop(); });
+      if (peerConnection) peerConnection.close();
+      if (callTimer) clearInterval(callTimer);
+
+      const duration = callStartTime ? Math.floor((Date.now() - callStartTime) / 1000) : 0;
+      const status = callStartTime ? "completed" : "missed";
+
+      await saveCallHistory(status, duration);
+
+      if (chatId && currentUser) {
+        try {
+          await updateDoc(doc(db, "calls", chatId), { status: "ended" });
+        } catch (e) { console.log("Error updating call status:", e); }
+      }
+      window.location.href = "chats.html";
+    }
+
+    function toggleMute() {
+      if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          audioTrack.enabled = !audioTrack.enabled;
+          isMuted = !audioTrack.enabled;
+          const muteBtn = document.getElementById("mute-btn");
+          if (isMuted) {
+            muteBtn.classList.add("active");
+            muteBtn.innerHTML = '<i class="ri-mic-off-line"></i>';
+          } else {
+            muteBtn.classList.remove("active");
+            muteBtn.innerHTML = '<i class="ri-mic-line"></i>';
+          }
+        }
+      }
+    }
+
+    function toggleSpeaker() {
+      // Note: speaker control remains audio-only in this simple implementation.
+      // Video tracks will continue to render in the peerConnection remote stream.
+
+      isSpeakerOn = !isSpeakerOn;
+      const speakerBtn = document.getElementById("speaker-btn");
+      const remoteAudio = document.getElementById("remote-audio");
+      
+      if (isSpeakerOn) {
+        speakerBtn.classList.add("active");
+        speakerBtn.innerHTML = '<i class="ri-volume-up-fill"></i>';
+        if (remoteAudio) {
+          remoteAudio.volume = 1.0;
+        }
+      } else {
+        speakerBtn.classList.remove("active");
+        speakerBtn.innerHTML = '<i class="ri-volume-up-line"></i>';
+        if (remoteAudio) {
+          remoteAudio.volume = 0.5;
+        }
+      }
+    }
+
+    document.getElementById("end-call-btn").addEventListener("click", endCall);
+    document.getElementById("mute-btn").addEventListener("click", toggleMute);
+    document.getElementById("speaker-btn").addEventListener("click", toggleSpeaker);
+
+    onAuthStateChanged(auth, async function(user) {
+      if (user) {
+        currentUser = user;
+        await initCall();
+      } else {
+        window.location.href = "auth.html";
+      }
+    });
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friends</title>
+  <link rel="stylesheet" href="CSS/chats.css">
+  <link rel="stylesheet" href="CSS/friends.css">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+  <header>
+    <div class="chat-container">
+      <div class="chats-nav">
+          <div>
+              <h2>Friends</h2>
+          </div>
+          <div class="nav-links-1">
+              <div>
+                  <button id="refresh-friends-btn" title="Refresh"><i class="ri-refresh-line"></i></button>
+              </div>
+              <div>
+                  <button title="Search"><i class="ri-search-line"></i></button>
+              </div>
+              <div>
+                  <button title="More"><i class="ri-more-2-fill"></i></button>
+              </div>
+      </div>
+   </div>
+   
+   <div class="search-container">
+     <i class="ri-search-line search-icon"></i>
+     <input type="text" id="search-input" class="search-input" placeholder="Search friends...">
+   </div>
+
+   <div class="nav-links-2 floating">
+        <a href="chats.html"><button><i class="ri-chat-3-line"></i><span>Chats</span></button></a>
+        <a href="calls.html"><button><i class="ri-phone-line"></i><span>Calls</span></button></a>
+        <a href="stories.html"><button><i class="ri-meteor-line"></i><span>Stories</span></button></a>
+        <a href="contacts.html"><button><i class="ri-group-line"></i><span>Contacts</span></button></a>
+        <a href="friends.html"><button class="active"><i class="ri-user-follow-line"></i><span>Friends</span></button></a>
+        <a href="settings.html"><button><i class="ri-settings-5-line"></i><span>Settings</span></button></a>
+  </header>
+
+  <!-- Tab Navigation -->
+  <div class="friends-tabs">
+    <button class="friends-tab active" data-tab="requests">
+      <i class="ri-user-add-line"></i> Requests
+      <span class="tab-badge" id="requests-badge" style="display: none;">0</span>
+    </button>
+    <button class="friends-tab" data-tab="sent">
+      <i class="ri-send-plane-line"></i> Sent
+      <span class="tab-badge" id="sent-badge" style="display: none;">0</span>
+    </button>
+    <button class="friends-tab" data-tab="friends">
+      <i class="ri-user-line"></i> Friends
+    </button>
+  </div>
+
+  <!-- Friend Requests Section (Received) -->
+  <div class="friends-section active" id="requests-section">
+    <div class="section-header">
+      <h3>Friend Requests</h3>
+      <p class="section-description">People who want to connect with you</p>
+    </div>
+    <div id="received-requests-list"></div>
+    <div class="empty-state" id="no-requests" style="display: none;">
+      <i class="ri-user-follow-line"></i>
+      <h3>No Friend Requests</h3>
+      <p>When someone sends you a friend request, it will appear here</p>
+    </div>
+  </div>
+
+  <!-- Sent Requests Section -->
+  <div class="friends-section" id="sent-section">
+    <div class="section-header">
+      <h3>Sent Requests</h3>
+      <p class="section-description">Friend requests you've sent</p>
+    </div>
+    <div id="sent-requests-list"></div>
+    <div class="empty-state" id="no-sent-requests" style="display: none;">
+      <i class="ri-send-plane-line"></i>
+      <h3>No Sent Requests</h3>
+      <p>When you send friend requests, they will appear here</p>
+    </div>
+  </div>
+
+  <!-- Friends Section -->
+  <div class="friends-section" id="friends-section">
+    <div class="section-header">
+      <h3>Friends</h3>
+      <p class="section-description">People you've accepted as friends</p>
+    </div>
+    <div class="action-buttons">
+      <button id="add-friend-btn" class="action-btn primary">
+        <i class="ri-user-add-line"></i> Add Friend
+      </button>
+    </div>
+    <div id="friends-list"></div>
+    <div class="empty-state" id="no-friends" style="display: none;">
+      <i class="ri-user-line"></i>
+      <h3>No Friends Yet</h3>
+      <p>Add friends to connect and chat with them</p>
+    </div>
+  </div>
+
+  <!-- Add Friend Modal -->
+  <div class="modal-overlay" id="add-friend-modal">
+    <div class="add-friend-modal-content">
+      <div class="modal-header">
+        <button class="modal-close" id="close-add-friend-modal">&times;</button>
+        <h3>Add Friend</h3>
+        <div></div>
+      </div>
+      
+      <div class="modal-body">
+        <div class="keypad-display">
+          <div class="keypad-number" id="keypad-display">
+            <span id="phone-number"></span>
+            <span class="cursor"></span>
+          </div>
+          <div class="keypad-error" id="keypad-error"></div>
+          <div class="keypad-hint">Enter 6-digit mobile number</div>
+        </div>
+        
+        <div class="keypad-container">
+          <div class="keypad">
+            <button class="keypad-btn" data-digit="1">
+              <span class="digit">1</span>
+            </button>
+            <button class="keypad-btn" data-digit="2">
+              <span class="digit">2</span>
+              <span class="letters">ABC</span>
+            </button>
+            <button class="keypad-btn" data-digit="3">
+              <span class="digit">3</span>
+              <span class="letters">DEF</span>
+            </button>
+            <button class="keypad-btn" data-digit="4">
+              <span class="digit">4</span>
+              <span class="letters">GHI</span>
+            </button>
+            <button class="keypad-btn" data-digit="5">
+              <span class="digit">5</span>
+              <span class="letters">JKL</span>
+            </button>
+            <button class="keypad-btn" data-digit="6">
+              <span class="digit">6</span>
+              <span class="letters">MNO</span>
+            </button>
+            <button class="keypad-btn" data-digit="7">
+              <span class="digit">7</span>
+              <span class="letters">PQRS</span>
+            </button>
+            <button class="keypad-btn" data-digit="8">
+              <span class="digit">8</span>
+              <span class="letters">TUV</span>
+            </button>
+            <button class="keypad-btn" data-digit="9">
+              <span class="digit">9</span>
+              <span class="letters">WXYZ</span>
+            </button>
+            <button class="keypad-btn star">
+              <span class="digit">*</span>
+            </button>
+            <button class="keypad-btn zero" data-digit="0">
+              <span class="digit">0</span>
+            </button>
+            <button class="keypad-btn backspace" id="keypad-backspace">
+              <i class="ri-delete-back-line"></i>
+            </button>
+          </div>
+        </div>
+        
+        <button class="send-request-btn" id="send-request-btn" disabled>
+          <i class="ri-send-plane-fill"></i> Send Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Preview Modal -->
+  <div class="modal-overlay" id="profile-preview-modal">
+    <div class="profile-preview-content">
+      <button class="modal-close" id="close-preview-modal">&times;</button>
+      <div class="profile-preview-header">
+        <img id="preview-profile-image" src="images/default-profile.png" alt="Profile">
+        <h2 id="preview-user-name">Name</h2>
+        <p id="preview-user-status">Hey there!</p>
+      </div>
+      <div class="profile-preview-details">
+        <div class="detail-item">
+          <i class="ri-phone-line"></i>
+          <span id="preview-user-mobile">+1 234 567 890</span>
+        </div>
+      </div>
+      <div class="profile-preview-actions" id="preview-actions">
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span id="toast-message"></span>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, onSnapshot, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+      authDomain: "posts-c532d.firebaseapp.com",
+      projectId: "posts-c532d",
+      storageBucket: "posts-c532d.appspot.com",
+      messagingSenderId: "742123859279",
+      appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    // Tab Navigation
+    document.querySelectorAll('.friends-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        document.querySelectorAll('.friends-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.friends-section').forEach(section => {
+          section.classList.remove('active');
+          if (section.id === tabName + '-section') {
+            section.classList.add('active');
+          }
+        });
+      });
+    });
+
+    // Refresh button
+    document.getElementById('refresh-friends-btn').addEventListener('click', async () => {
+      if (currentUser) {
+        await loadAllData();
+        showToast("Refreshed!");
+      }
+    });
+
+    function showToast(message) {
+      const toastEl = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = message;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 3000);
+    }
+
+    // Keypad
+    let keypadNumber = "";
+    const phoneNumberDisplay = document.getElementById('phone-number');
+    const keypadError = document.getElementById('keypad-error');
+    const sendRequestBtn = document.getElementById('send-request-btn');
+
+    function updateKeypadDisplay() {
+      let formatted = keypadNumber;
+      if (keypadNumber.length > 3) {
+        formatted = keypadNumber.slice(0, 3) + "-" + keypadNumber.slice(3);
+      }
+      phoneNumberDisplay.textContent = formatted;
+      sendRequestBtn.disabled = keypadNumber.length !== 6;
+    }
+
+    document.querySelectorAll('.keypad-btn[data-digit]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (keypadNumber.length < 6) {
+          keypadNumber += btn.dataset.digit;
+          updateKeypadDisplay();
+          keypadError.textContent = "";
+        }
+      });
+    });
+
+    document.getElementById('keypad-backspace').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (keypadNumber.length > 0) {
+        keypadNumber = keypadNumber.slice(0, -1);
+        updateKeypadDisplay();
+      }
+    });
+
+    document.getElementById('add-friend-btn').addEventListener('click', () => {
+      keypadNumber = "";
+      updateKeypadDisplay();
+      keypadError.textContent = "";
+      document.getElementById('add-friend-modal').classList.add('show');
+    });
+
+    document.getElementById('close-add-friend-modal').addEventListener('click', () => {
+      document.getElementById('add-friend-modal').classList.remove('show');
+    });
+
+    // Load all data
+    async function loadAllData() {
+      await Promise.all([
+        loadReceivedRequests(),
+        loadSentRequests(),
+        loadFriends()
+      ]);
+    }
+
+    // Send Friend Request
+    sendRequestBtn.addEventListener('click', async () => {
+      if (keypadNumber.length !== 6) return;
+      
+      const formattedMobileNumber = keypadNumber.slice(0, 3) + "-" + keypadNumber.slice(3);
+      
+      try {
+        const usersRef = collection(db, "users");
+        
+        let q = query(usersRef, where("mobileNumber", "==", formattedMobileNumber));
+        let querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+          q = query(usersRef, where("mobileNumber", "==", keypadNumber));
+          querySnapshot = await getDocs(q);
+        }
+        
+        if (querySnapshot.empty) {
+          q = query(usersRef, where("mobileNumber", "==", "+1" + formattedMobileNumber));
+          querySnapshot = await getDocs(q);
+        }
+
+        if (querySnapshot.empty) {
+          keypadError.textContent = "User not found with this number!";
+          return;
+        }
+
+        const targetUserDoc = querySnapshot.docs[0];
+        const targetUserId = targetUserDoc.id;
+
+        if (targetUserId === currentUser.uid) {
+          keypadError.textContent = "You cannot send request to yourself!";
+          return;
+        }
+
+        const targetUserData = targetUserDoc.data();
+
+        const currentUserDoc = await getDoc(doc(db, "users", currentUser.uid));
+        const currentUserData = currentUserDoc.data();
+        const friendsList = currentUserData.friends || [];
+        
+        if (friendsList && friendsList.includes(targetUserId)) {
+          keypadError.textContent = "You are already friends!";
+          return;
+        }
+
+        const sentRequestsRef = collection(db, "friendRequests");
+        const existingRequestQuery = query(
+          sentRequestsRef,
+          where("from", "==", currentUser.uid),
+          where("to", "==", targetUserId),
+          where("status", "==", "pending")
+        );
+        const existingRequests = await getDocs(existingRequestQuery);
+        
+        if (!existingRequests.empty) {
+          keypadError.textContent = "Request already sent!";
+          return;
+        }
+
+        // Create friend request
+        await setDoc(doc(db, "friendRequests", "req_" + Date.now()), {
+          from: currentUser.uid,
+          fromName: currentUser.firstName + " " + currentUser.lastName,
+          fromImage: currentUser.profileImageUrl || "images/default-profile.png",
+          to: targetUserId,
+          toName: targetUserData.firstName + " " + targetUserData.lastName,
+          status: "pending",
+          timestamp: serverTimestamp()
+        });
+
+        document.getElementById('add-friend-modal').classList.remove('show');
+        showToast("Friend request sent!");
+        
+        // Reload data
+        await loadAllData();
+        
+      } catch (error) {
+        console.error("Error sending friend request:", error);
+        keypadError.textContent = "Error sending request: " + error.message;
+      }
+    });
+
+    // Load Received Requests
+    async function loadReceivedRequests() {
+      try {
+        const requestsRef = collection(db, "friendRequests");
+        const q = query(
+          requestsRef,
+          where("to", "==", currentUser.uid),
+          where("status", "==", "pending")
+        );
+        
+        const snapshot = await getDocs(q);
+        const requests = [];
+        
+        for (const doc of snapshot.docs) {
+          const requestData = doc.data();
+          const fromUserDoc = await getDoc(doc(db, "users", requestData.from));
+          
+          if (fromUserDoc.exists()) {
+            requests.push({
+              id: doc.id,
+              ...requestData,
+              userData: fromUserDoc.data()
+            });
+          }
+        }
+        
+        renderReceivedRequests(requests);
+        
+      } catch (error) {
+        console.error("Error loading received requests:", error);
+      }
+    }
+
+    function renderReceivedRequests(requests) {
+      const container = document.getElementById('received-requests-list');
+      const emptyState = document.getElementById('no-requests');
+      
+      if (requests.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'flex';
+        document.getElementById('requests-badge').style.display = 'none';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      container.innerHTML = '';
+      
+      const badge = document.getElementById('requests-badge');
+      badge.textContent = requests.length;
+      badge.style.display = 'flex';
+      
+      requests.forEach(request => {
+        const requestDiv = document.createElement('div');
+        requestDiv.className = 'friend-request-item';
+        
+        requestDiv.innerHTML = `
+          <div class="request-user">
+            <img src="${request.userData.profileImageUrl || 'images/default-profile.png'}" alt="${request.userData.firstName}">
+            <div class="request-user-info">
+              <h4>${request.userData.firstName} ${request.userData.lastName}</h4>
+              <p>${request.userData.status || 'Hey there!'}</p>
+            </div>
+          </div>
+          <div class="request-actions">
+            <button class="btn-accept" data-id="${request.id}" data-user-id="${request.from}">
+              <i class="ri-check-line"></i> Accept
+            </button>
+            <button class="btn-reject" data-user-id="${request.from}">
+              <i class="ri-close-line"></i> Delete
+            </button>
+          </div>
+        `;
+        
+        requestDiv.querySelector('.btn-accept').addEventListener('click', async (e) => {
+          const reqId = e.currentTarget.dataset.id;
+          const userId = e.currentTarget.dataset.userId;
+          await acceptFriendRequest(reqId, userId, request.userData);
+        });
+        
+        requestDiv.querySelector('.btn-reject').addEventListener('click', async (e) => {
+          const userId = e.currentTarget.dataset.userId;
+          await rejectFriendRequest(userId);
+        });
+        
+        container.appendChild(requestDiv);
+      });
+    }
+
+    // Load Sent Requests
+    async function loadSentRequests() {
+      try {
+        const requestsRef = collection(db, "friendRequests");
+        const q = query(
+          requestsRef,
+          where("from", "==", currentUser.uid),
+          where("status", "==", "pending")
+        );
+        
+        const snapshot = await getDocs(q);
+        const requests = [];
+        
+        for (const doc of snapshot.docs) {
+          const requestData = doc.data();
+          const toUserDoc = await getDoc(doc(db, "users", requestData.to));
+          
+          if (toUserDoc.exists()) {
+            requests.push({
+              id: doc.id,
+              ...requestData,
+              userData: toUserDoc.data()
+            });
+          }
+        }
+        
+        renderSentRequests(requests);
+        
+      } catch (error) {
+        console.error("Error loading sent requests:", error);
+      }
+    }
+
+    function renderSentRequests(requests) {
+      const container = document.getElementById('sent-requests-list');
+      const emptyState = document.getElementById('no-sent-requests');
+      
+      if (requests.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'flex';
+        document.getElementById('sent-badge').style.display = 'none';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      container.innerHTML = '';
+      
+      const badge = document.getElementById('sent-badge');
+      badge.textContent = requests.length;
+      badge.style.display = 'flex';
+      
+      requests.forEach(request => {
+        const requestDiv = document.createElement('div');
+        requestDiv.className = 'sent-request-item';
+        
+        requestDiv.innerHTML = `
+          <div class="request-user">
+            <img src="${request.userData.profileImageUrl || 'images/default-profile.png'}" alt="${request.userData.firstName}">
+            <div class="request-user-info">
+              <h4>${request.userData.firstName} ${request.userData.lastName}</h4>
+              <p class="pending-status"><i class="ri-time-line"></i> Pending</p>
+            </div>
+          </div>
+          <button class="btn-cancel-request" data-user-id="${request.to}">
+            <i class="ri-close-line"></i>
+          </button>
+        `;
+        
+        requestDiv.querySelector('.btn-cancel-request').addEventListener('click', async (e) => {
+          const userId = e.currentTarget.dataset.userId;
+          await cancelFriendRequest(userId);
+        });
+        
+        container.appendChild(requestDiv);
+      });
+    }
+
+    // Accept Friend Request
+    async function acceptFriendRequest(requestId, fromUserId, fromUserData) {
+      try {
+        const currentUserRef = doc(db, "users", currentUser.uid);
+        const targetUserRef = doc(db, "users", fromUserId);
+        
+        const currentUserDoc = await getDoc(currentUserRef);
+        const targetUserDoc = await getDoc(targetUserRef);
+        
+        const currentFriends = currentUserDoc.data().friends || [];
+        const targetFriends = targetUserDoc.data().friends || [];
+        
+        if (!currentFriends.includes(fromUserId)) {
+          await updateDoc(currentUserRef, {
+            friends: [...currentFriends, fromUserId]
+          });
+        }
+        
+        if (!targetFriends.includes(currentUser.uid)) {
+          await updateDoc(targetUserRef, {
+            friends: [...targetFriends, currentUser.uid]
+          });
+        }
+        
+        // Ensure the incoming pending request is removed/updated.
+        // If the request doc id is missing for some reason, mark all matching pending requests.
+        if (requestId) {
+          await updateDoc(doc(db, "friendRequests", requestId), {
+            status: "accepted",
+            respondedAt: serverTimestamp()
+          });
+        } else {
+          const requestsRef = collection(db, "friendRequests");
+          const requestQuery = query(
+            requestsRef,
+            where("from", "==", fromUserId),
+            where("to", "==", currentUser.uid),
+            where("status", "==", "pending")
+          );
+          const requestDocs = await getDocs(requestQuery);
+          for (const reqDoc of requestDocs.docs) {
+            await updateDoc(doc(db, "friendRequests", reqDoc.id), {
+              status: "accepted",
+              respondedAt: serverTimestamp()
+            });
+          }
+        }
+
+        // Hard-remove the now-accepted pending docs so they never stay in Requests.
+        const cleanupRequestsRef = collection(db, "friendRequests");
+        const cleanupQuery = query(
+          cleanupRequestsRef,
+          where("from", "==", fromUserId),
+          where("to", "==", currentUser.uid),
+          where("status", "in", ["accepted", "pending"])
+        );
+        const cleanupSnap = await getDocs(cleanupQuery);
+        for (const reqDoc of cleanupSnap.docs) {
+          await deleteDoc(doc(db, "friendRequests", reqDoc.id));
+        }
+
+        showToast("Friend added successfully!");
+        await loadAllData();
+        
+      } catch (error) {
+        console.error("Error accepting friend request:", error);
+        showToast("Error accepting request");
+      }
+    }
+
+    // Reject Friend Request
+    async function rejectFriendRequest(fromUserId) {
+      try {
+        const requestsRef = collection(db, "friendRequests");
+        const requestQuery = query(
+          requestsRef,
+          where("from", "==", fromUserId),
+          where("to", "==", currentUser.uid),
+          where("status", "==", "pending")
+        );
+        const requestDocs = await getDocs(requestQuery);
+        
+        for (const reqDoc of requestDocs.docs) {
+          await updateDoc(doc(db, "friendRequests", reqDoc.id), {
+            status: "rejected",
+            respondedAt: serverTimestamp()
+          });
+        }
+        
+        showToast("Friend request rejected");
+        await loadAllData();
+        
+      } catch (error) {
+        console.error("Error rejecting friend request:", error);
+      }
+    }
+
+    // Cancel Friend Request
+    async function cancelFriendRequest(toUserId) {
+      try {
+        const requestsRef = collection(db, "friendRequests");
+        const requestQuery = query(
+          requestsRef,
+          where("from", "==", currentUser.uid),
+          where("to", "==", toUserId),
+          where("status", "==", "pending")
+        );
+        const requestDocs = await getDocs(requestQuery);
+        
+        for (const reqDoc of requestDocs.docs) {
+          await deleteDoc(doc(db, "friendRequests", reqDoc.id));
+        }
+        
+        showToast("Friend request cancelled");
+        await loadAllData();
+        
+      } catch (error) {
+        console.error("Error cancelling friend request:", error);
+      }
+    }
+
+    // Load Friends
+    async function loadFriends() {
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (!userDoc.exists()) return;
+        
+        const userData = userDoc.data();
+        const friendIds = userData.friends || [];
+        
+        const friends = [];
+        
+        for (const friendId of friendIds) {
+          const friendDoc = await getDoc(doc(db, "users", friendId));
+          if (friendDoc.exists()) {
+            friends.push({
+              id: friendId,
+              ...friendDoc.data()
+            });
+          }
+        }
+        
+        renderFriends(friends);
+        
+      } catch (error) {
+        console.error("Error loading friends:", error);
+      }
+    }
+
+    function renderFriends(friends) {
+      const container = document.getElementById('friends-list');
+      const emptyState = document.getElementById('no-friends');
+      
+      if (friends.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'flex';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      container.innerHTML = '';
+      
+      friends.sort((a, b) => (a.firstName || "").localeCompare(b.firstName || ""));
+      
+      friends.forEach(friend => {
+        const friendDiv = document.createElement('div');
+        friendDiv.className = 'friend-item';
+        
+        friendDiv.innerHTML = `
+          <div class="friend-user">
+            <img src="${friend.profileImageUrl || 'images/default-profile.png'}" alt="${friend.firstName}">
+            <div class="friend-user-info">
+              <h4>${friend.firstName} ${friend.lastName}</h4>
+              <p>${friend.status || 'Hey there!'}</p>
+            </div>
+          </div>
+          <div class="friend-actions">
+            <button class="btn-message" data-id="${friend.id}">
+              <i class="ri-message-3-line"></i>
+            </button>
+          </div>
+        `;
+        
+        friendDiv.querySelector('.btn-message').addEventListener('click', () => {
+          window.location.href = "chatting.html?contactId=" + friend.id;
+        });
+        
+        container.appendChild(friendDiv);
+      });
+    }
+
+    // Real-time Listeners
+    let unsubscribes = [];
+
+    function setupRealTimeListeners() {
+      // Clean up old listeners
+      unsubscribes.forEach(unsub => unsub());
+      unsubscribes = [];
+
+      const requestsRef = collection(db, "friendRequests");
+      
+      // Listen for received requests - get all and filter in memory
+      const receivedQuery = query(requestsRef, where("to", "==", currentUser.uid));
+      
+      const unsubReceived = onSnapshot(receivedQuery, (snapshot) => {
+        loadReceivedRequests();
+      }, (error) => {
+        console.error("Received listener error:", error);
+        loadReceivedRequests();
+      });
+      unsubscribes.push(unsubReceived);
+      
+      // Listen for sent requests
+      const sentQuery = query(requestsRef, where("from", "==", currentUser.uid));
+      
+      const unsubSent = onSnapshot(sentQuery, (snapshot) => {
+        loadSentRequests();
+      }, (error) => {
+        console.error("Sent listener error:", error);
+        loadSentRequests();
+      });
+      unsubscribes.push(unsubSent);
+      
+      // Listen for user changes
+      const userRef = doc(db, "users", currentUser.uid);
+      
+      const unsubUser = onSnapshot(userRef, (docSnap) => {
+        loadFriends();
+      }, (error) => {
+        console.error("User listener error:", error);
+        loadFriends();
+      });
+      unsubscribes.push(unsubUser);
+    }
+
+    // Initialize
+    onAuthStateChanged(auth, async function(user) {
+      if (user) {
+        currentUser = user;
+        
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          currentUser.firstName = userData.firstName || "";
+          currentUser.lastName = userData.lastName || "";
+          currentUser.profileImageUrl = userData.profileImageUrl || "images/default-profile.png";
+        }
+        
+        await loadAllData();
+        setupRealTimeListeners();
+      } else {
+        window.location.href = "auth.html";
+      }
+    });
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

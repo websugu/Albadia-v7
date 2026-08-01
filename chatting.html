@@ -1,0 +1,2918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatting</title>
+  <link rel="stylesheet" href="CSS/chatting.css">
+  <link rel="stylesheet" href="CSS/chatting_voice.css">
+
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <style>
+
+    /* Core message styles - handled by chatting.css */
+    .recording { animation: pulse 1s infinite; color: red !important; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    #chat-messages { min-height: 100%; padding: 10px; }
+    .typing-indicator { padding: 8px 16px; font-size: 12px; color: #ffffff; }
+    .typing-dots { display: inline-block; }
+    .typing-dots span { display: inline-block; width: 6px; height: 6px; background: #ffffff; border-radius: 50%; margin: 0 2px; animation: typing 1.4s infinite both; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    .message-status { font-size: 12px; margin-left: 5px; }
+    .message-status.seen { color: #34B7F1; }
+    .message-status.delivered { color: #888; }
+  </style>
+</head>
+<body>
+<div id="selection-toolbar">
+  <div style="display: flex; align-items: center; gap: 15px;">
+    <button id="close-selection" title="Cancel"><i class="ri-arrow-left-s-line"></i></button>
+    <span class="count"><span id="selected-count">0</span> selected</span>
+  </div>
+  <div class="actions">
+    <button id="delete-selected" title="Delete"><i class="ri-delete-bin-line"></i></button>
+  </div>
+</div>
+
+<section>
+  <div class="chatting" id="chat-header">
+    <div class="chatting-ctn">
+        <div class="chatting-bd">
+            <div class="chatting-user-profile">
+                <div onclick="window.location='chats.html'">
+                    <div><i class="ri-arrow-left-s-line"></i></div>
+                </div>
+                <div><img id="contact-image" src="" alt="Contact" style="border-radius: 50%;width: 50px;height: 50px;"></div>
+            </div>
+            <div class="chatting-user">
+                <h2 id="contact-name">Loading...</h2>
+                <div id="typing-indicator" class="typing-indicator" style="display: none;">
+                    <span id="typing-text"></span>
+                </div>
+            </div>
+        </div>
+<div class="chatting-actions-1">
+            <div id="call-btn" style="cursor: pointer;"><i class="ri-phone-fill"></i></div>
+            <!-- <div><i class="ri-video-on-line"></i></div> -->
+            <div id="search-btn" style="cursor: pointer;"><i class="ri-search-line"></i></div>
+            <div id="group-info-btn" style="cursor: pointer; display: none;"><i class="ri-group-line"></i></div>
+            <div id="contact-info-btn" style="cursor: pointer;"><i class="ri-information-line"></i></div>
+        </div>
+    </div>
+</div>
+<div class="chatting-body">
+  <!-- <div id="typing-indicator" class="typing-indicator" style="display: none;">
+    <span id="typing-text"></span>
+  </div> -->
+  <div id="chat-messages">
+    <div class="no-messages">Loading messages...</div>
+  </div>
+</div>
+<div id="attach-menu" class="attach-menu">
+  <div class="attach-option" id="photo-option">
+    <i class="ri-image-line"></i>
+    <span>Photo</span>
+  </div>
+  <div class="attach-option" id="voice-option">
+    <i class="ri-mic-line"></i>
+    <span>Voice</span>
+  </div>
+  <div class="attach-option" id="document-option">
+    <i class="ri-file-line"></i>
+    <span>Document</span>
+  </div>
+  <div class="attach-option" id="contact-option">
+    <i class="ri-user-line"></i>
+    <span>Contact</span>
+  </div>
+</div>
+<input type="file" id="image-input" accept="image/*" style="display: none;">
+<input type="file" id="multi-image-input" accept="image/*" multiple style="display: none;">
+<input type="file" id="document-input" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" style="display: none;">
+
+<!-- Media Preview Modal -->
+<div id="media-preview-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 3000; align-items: center; justify-content: center; flex-direction: column;">
+  <div id="preview-header" style="position: absolute; top: 20px; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3001;">
+    <span id="preview-count" style="color: white; font-size: 16px;"></span>
+    <button id="close-preview-modal" style="background: none; border: none; color: white; font-size: 28px; cursor: pointer;">&times;</button>
+  </div>
+  <div id="preview-content" style="max-width: 90%; max-height: 75%; display: flex; align-items: center; justify-content: center;"></div>
+  <div id="preview-thumbnails" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; max-width: 90%;"></div>
+  <div id="preview-actions" style="position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 15px;">
+    <button id="cancel-preview" style="padding: 12px 30px; background: #666; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">Cancel</button>
+    <button id="add-more-photos" style="padding: 12px 30px; background: #28a745; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;"><i class="ri-add-line"></i> Add More</button>
+    <button id="send-preview" style="padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">Send <span id="send-count"></span></button>
+  </div>
+</div>
+
+<!-- Document Viewer Modal -->
+<div id="document-viewer-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); z-index: 3500; align-items: center; justify-content: center; flex-direction: column;">
+  <div id="document-header" style="position: absolute; top: 20px; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 3501;">
+    <span id="document-name" style="color: white; font-size: 16px; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+    <button id="close-document-modal" style="background: none; border: none; color: white; font-size: 28px; cursor: pointer;">&times;</button>
+  </div>
+  <div id="document-content" style="max-width: 90%; max-height: 80%; width: 100%; display: flex; align-items: center; justify-content: center;"></div>
+  <div id="document-actions" style="position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 15px;">
+    <button id="send-to-contact" style="padding: 12px 30px; background: #28a745; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;"><i class="ri-send-plane-line"></i> Send to Contact</button>
+    <button id="download-document" style="padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;"><i class="ri-download-line"></i> Download</button>
+    <button id="close-document" style="padding: 12px 30px; background: #666; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">Close</button>
+  </div>
+</div>
+
+<!-- Voice Recording UI -->
+<div id="voice-recording-ui" style="display: none; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: white; padding: 15px 25px; border-radius: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 1000; align-items: center; gap: 15px;">
+  <canvas id="waveform-canvas" width="200" height="40" style="background: #f0f0f0; border-radius: 5px;"></canvas>
+  <div id="recording-timer" style="font-size: 14px; color: #333; min-width: 40px;">0:00</div>
+  <button id="pause-recording" style="background: none; border: none; font-size: 20px; cursor: pointer;"><i class="ri-pause-fill"></i></button>
+  <button id="cancel-recording" style="background: none; border: none; font-size: 20px; color: red; cursor: pointer;"><i class="ri-close-fill"></i></button>
+</div>
+
+<!-- Contact Selection Modal -->
+<div id="contact-select-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2500;">
+  <div style="position: absolute; bottom: 0; left: 0; right: 0; background: white; border-radius: 20px 20px 0 0; max-height: 60vh; overflow: auto;">
+    <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0;">Select Contact</h3>
+      <button id="close-contact-modal" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+    </div>
+    <div id="contact-list" style="padding: 10px;"></div>
+  </div>
+</div>
+
+<div class="chatting-actions">
+  <div id="chat-input" style="display: flex; flex: 1; align-items: center; gap: 10px;">
+    <button id="attach-btn" style="background: none; border: none; font-size: 1.5rem; color: #007bff; cursor: pointer;"><i class="ri-add-circle-line"></i></button>
+    <button id="voice-record-btn" title="Hold to record"><i class="ri-mic-fill"></i></button>
+    <input type="text" id="message-input" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; font-size: 1rem;" />
+    <button id="send-button" style="background: none; border: none; font-size: 1.5rem; color: #007bff; cursor: pointer;"><i class="ri-send-plane-2-line"></i></button>
+  </div>
+</div>
+</section>
+
+<!-- Ensure chat UI loads even on slow networks -->
+<script>
+  console.log('chatting.html loaded');
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, updateDoc, serverTimestamp, getDocs, arrayUnion, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+  authDomain: "posts-c532d.firebaseapp.com",
+  projectId: "posts-c532d",
+  storageBucket: "posts-c532d.appspot.com",
+  messagingSenderId: "742123859279",
+  appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+let currentUser = null;
+let contactId = null;
+let selectionMode = false;
+let selectedMessages = new Set();
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+let isPaused = false;
+let recordingTimeout = null;
+let audioContext = null;
+let analyser = null;
+let dataArray = null;
+let animationId = null;
+let recordingStartTime = null;
+let pausedTime = 0;
+
+const chatMessages = document.getElementById("chat-messages");
+const messageInput = document.getElementById("message-input");
+const sendButton = document.getElementById("send-button");
+const attachBtn = document.getElementById("attach-btn");
+const attachMenu = document.getElementById("attach-menu");
+const imageInput = document.getElementById("image-input");
+const photoOption = document.getElementById("photo-option");
+const voiceRecordBtn = document.getElementById("voice-record-btn");
+const selectionToolbar = document.getElementById("selection-toolbar");
+const chatHeader = document.getElementById("chat-header");
+
+const urlParams = new URLSearchParams(window.location.search);
+contactId = urlParams.get("contactId");
+let groupId = urlParams.get("groupId");
+let isGroupChat = !!groupId;
+
+console.log("contactId:", contactId, "groupId:", groupId, "isGroupChat:", isGroupChat);
+
+if (!contactId && !groupId) {
+  alert("Invalid chat link");
+  window.location.href = "chats.html";
+}
+
+// For group chats, use groupId as the identifier
+if (isGroupChat) {
+  contactId = groupId;
+}
+
+// =====================
+// MARK MESSAGES AS READ
+// =====================
+
+async function markMessagesAsRead() {
+  if (!currentUser || !contactId) return;
+
+  try {
+    // Keep backward compatibility with existing schema (no indexed query yet)
+    // but avoid re-marking already read messages.
+    const snapshot = await getDocs(collection(db, "messages"));
+    const unreadMessages = [];
+
+    snapshot.forEach((docSnap) => {
+      const msg = docSnap.data();
+      const msgId = docSnap.id;
+
+      if (msg.deleted) return;
+
+      // Group chat: mark messages inside the group that are unread for this user.
+      if (isGroupChat) {
+        if (msg.groupId === groupId && msg.receiverId === currentUser.uid && !msg.read) {
+          unreadMessages.push(msgId);
+        }
+        return;
+      }
+
+      // Individual chat
+      if (msg.senderId === contactId && msg.receiverId === currentUser.uid && !msg.read) {
+        unreadMessages.push(msgId);
+      }
+    });
+
+    for (const msgId of unreadMessages) {
+      await updateDoc(doc(db, "messages", msgId), {
+        read: true,
+        readAt: serverTimestamp(),
+      });
+    }
+
+    console.log("Marked " + unreadMessages.length + " messages as read");
+  } catch (error) {
+    console.error("Error marking messages as read:", error);
+  }
+}
+
+
+// =====================
+// LOAD MESSAGES
+// =====================
+
+async function loadMessages() {
+  console.log("Loading messages for contact:", contactId);
+  
+  chatMessages.innerHTML = '<div class="no-messages">Loading messages...</div>';
+  
+  try {
+    const snapshot = await getDocs(collection(db, "messages"));
+    console.log("Total messages in DB:", snapshot.size);
+    
+    let messages = [];
+    
+    snapshot.forEach((doc) => {
+      const msg = doc.data();
+      msg.id = doc.id;
+      messages.push(msg);
+    });
+    
+    // Filter messages between current user and contact or group messages
+    messages = messages.filter(msg => {
+      // For group chats, check if message belongs to this group
+      if (isGroupChat && msg.groupId === groupId) {
+        return true;
+      }
+      
+      // For individual chats
+      const isFromContact = msg.senderId === contactId;
+      const isToContact = msg.receiverId === contactId;
+      const isFromUser = msg.senderId === currentUser?.uid;
+      const isToUser = msg.receiverId === currentUser?.uid;
+      
+      return (isFromContact && isToUser) || (isFromUser && isToContact);
+    });
+    
+    // Sort by timestamp
+    messages.sort((a, b) => {
+      const timeA = a.timestamp ? (a.timestamp.toDate ? a.timestamp.toDate().getTime() : new Date(a.timestamp).getTime()) : 0;
+      const timeB = b.timestamp ? (b.timestamp.toDate ? b.timestamp.toDate().getTime() : new Date(b.timestamp).getTime()) : 0;
+      return timeA - timeB;
+    });
+    
+    chatMessages.innerHTML = "";
+    
+    if (messages.length === 0) {
+      chatMessages.innerHTML = '<div class="no-messages">No messages yet. Say hi!</div>';
+    } else {
+      messages.forEach(msg => displayMessage(msg));
+    }
+    
+    // Mark messages as read after loading
+    await markMessagesAsRead();
+    
+  } catch (error) {
+    console.error("Error loading:", error);
+    chatMessages.innerHTML = '<div class="no-messages">Error: ' + error.message + '</div>';
+  }
+}
+
+// =====================
+// REAL-TIME LISTENER
+// =====================
+
+function setupRealtime() {
+  console.log("Setting up real-time...");
+  
+  onSnapshot(collection(db, "messages"), (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        const msg = change.doc.data();
+        msg.id = change.doc.id;
+        
+        // For group chats, check if message belongs to this group
+        let isRelevantMessage = false;
+        if (isGroupChat && msg.groupId === groupId) {
+          isRelevantMessage = true;
+        } else {
+          // For individual chats
+          const isFromContact = msg.senderId === contactId;
+          const isToContact = msg.receiverId === contactId;
+          const isFromUser = msg.senderId === currentUser?.uid;
+          const isToUser = msg.receiverId === currentUser?.uid;
+          isRelevantMessage = (isFromContact && isToUser) || (isFromUser && isToContact);
+        }
+        
+        if (isRelevantMessage) {
+          console.log("New message:", msg.text);
+          displayMessage(msg);
+          
+          const noMsg = chatMessages.querySelector('.no-messages');
+          if (noMsg) noMsg.remove();
+          
+          // Mark new incoming messages as read (for WhatsApp-like behavior)
+          // Only mark unread messages coming from the other side.
+          if (msg.senderId !== currentUser?.uid && msg.read !== true) {
+            updateDoc(doc(db, "messages", msg.id), {
+              read: true,
+              readAt: serverTimestamp()
+            });
+          }
+        }
+      }
+    });
+  });
+}
+
+// =====================
+// HELPER FUNCTIONS FOR DOCUMENTS
+// =====================
+
+function getDocumentIcon(fileName) {
+  const extension = (fileName || "").split(".").pop().toLowerCase();
+  if (extension === "pdf") {
+    return '<i class="ri-file-pdf-line" style="font-size: 32px; color: #e74c3c;"></i>';
+  } else if (["doc", "docx"].indexOf(extension) !== -1) {
+    return '<i class="ri-file-word-line" style="font-size: 32px; color: #2196F3;"></i>';
+  } else if (["xls", "xlsx"].indexOf(extension) !== -1) {
+    return '<i class="ri-file-excel-line" style="font-size: 32px; color: #4CAF50;"></i>';
+  } else if (["ppt", "pptx"].indexOf(extension) !== -1) {
+    return '<i class="ri-file-ppt-line" style="font-size: 32px; color: #ff9800;"></i>';
+  } else if (extension === "txt") {
+    return '<i class="ri-file-text-line" style="font-size: 32px; color: #9E9E9E;"></i>';
+  } else {
+    return '<i class="ri-file-line" style="font-size: 32px; color: #9E9E9E;"></i>';
+  }
+}
+
+function formatFileSize(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+// =====================
+// DISPLAY MESSAGE
+// =====================
+
+function formatTime(timestamp) {
+  if (!timestamp) return "";
+  try {
+    let date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch(e) { return ""; }
+}
+
+function displayMessage(msg) {
+  if (document.querySelector(`[data-id="${msg.id}"]`)) return;
+
+  // Ensure custom voice UI is wired even after dynamic rendering.
+
+  
+  const isSent = msg.senderId === currentUser?.uid;
+  const isGroupMessage = isGroupChat && !isSent;
+  const div = document.createElement("div");
+  div.className = isSent ? "sent" : "received";
+  div.dataset.id = msg.id;
+  div.dataset.senderId = msg.senderId;
+  
+  // For group messages from others, add sender info wrapper
+  let senderInfoHtml = '';
+  if (isGroupMessage && msg.senderName) {
+    senderInfoHtml = `
+      <div class="message-sender-info" data-sender-id="${msg.senderId}">
+        <img src="${msg.senderImage || 'images/default-profile.png'}" alt="${msg.senderName}">
+        <span>${msg.senderName}</span>
+      </div>
+    `;
+  }
+  
+  // Click for selection mode
+  div.addEventListener("click", function(e) {
+    if (selectionMode) {
+      toggleSelection(msg.id);
+    } else if (isGroupMessage && !isSent) {
+      // Show sender info panel for group messages
+      showSenderInfoPanel(msg.senderId, msg.senderName, msg.senderImage);
+    }
+  });
+  
+// Long press for delete
+  let longPressTimer;
+  div.addEventListener("mousedown", function() {
+    longPressTimer = setTimeout(() => {
+      if (msg.senderId === currentUser?.uid) enterSelectionMode(msg.id);
+    }, 500);
+  });
+  div.addEventListener("mouseup", function() { clearTimeout(longPressTimer); });
+  div.addEventListener("mouseleave", function() { clearTimeout(longPressTimer); });
+  
+  // Right-click for WhatsApp style menu
+  div.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+    showMessageMenu(div, msg.id, msg, e);
+  });
+  
+  // Long press on mobile also shows menu
+  div.addEventListener("touchstart", function(e) {
+    longPressTimer = setTimeout(() => {
+      showMessageMenu(div, msg.id, msg, e);
+    }, 500);
+  });
+  div.addEventListener("touchend", function() { clearTimeout(longPressTimer); });
+  
+  if (msg.deleted) {
+    div.innerHTML = '<span style="color: #999; font-style: italic;">This message was deleted</span>';
+  } else {
+    // For group messages from others, add sender info
+    let senderInfoHtml = '';
+    if (isGroupMessage && msg.senderName) {
+      senderInfoHtml = `
+        <div class="message-sender-info" data-sender-id="${msg.senderId}">
+          <img src="${msg.senderImage || 'images/default-profile.png'}" alt="${msg.senderName}" style="width:20px;height:20px;border-radius:50%;vertical-align:middle;margin-right:5px;">
+          <span style="font-size:11px;font-weight:600;color:#667eea;">${msg.senderName}</span>
+        </div>
+      `;
+    }
+    
+    let content = "";
+    if (msg.type === "text") content = msg.text || "";
+    else if (msg.type === "image") content = '<img src="' + (msg.imageUrl || "") + '" class="message-img" onclick="window.open(this.src)">';
+  if (msg.type === "audio") content = senderInfoHtml + `
+      <div class="voice-message" data-audio-wrapper="${msg.id}">
+        <div class="voice-top">
+          <i class="ri-mic-2-line"></i>
+          <span class="voice-label">Voice</span>
+        </div>
+        <div class="voice-player">
+          <button class="voice-play" type="button" aria-label="Play">
+            <i class="ri-play-fill"></i>
+          </button>
+          <div class="voice-progress">
+            <div class="voice-progress-bar"></div>
+            <div class="voice-progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="voice-time">
+            <span class="voice-current">0:00</span>
+            <span class="voice-sep">/</span>
+            <span class="voice-duration">0:00</span>
+          </div>
+          <audio class="voice-audio" src="${msg.audioUrl || ""}" preload="metadata"></audio>
+        </div>
+      </div>
+    `;
+
+    else if (msg.type === "document") {
+      const docIcon = getDocumentIcon(msg.documentName || "");
+      content = senderInfoHtml + '<div class="document-message" onclick="showDocumentViewer(\'' + (msg.documentUrl || "") + '\', \'' + (msg.documentName || "document") + '\')" style="cursor: pointer; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px; display: flex; align-items: center; gap: 10px;">' + docIcon + '<div style="flex: 1; overflow: hidden;"><div style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + (msg.documentName || "Document") + '</div><div style="font-size: 12px; color: #666;">' + formatFileSize(msg.documentSize) + '</div></div><i class="ri-download-line" style="font-size: 20px; color: #667eea;"></i></div>';
+    }
+    else {
+      // Fallback: prefer msg.text if present so UI never shows "[Text]" for normal text messages
+      if (typeof msg.text === 'string' && msg.text.trim()) content = msg.text;
+      else content = "[" + (msg.type || "message") + "]";
+    }
+    
+    // Show edited indicator if message was edited
+    let editedIndicator = "";
+    if (msg.edited) {
+      editedIndicator = '<span style="font-size: 10px; opacity: 0.7; margin-left: 5px;">(edited)</span>';
+    }
+    
+    const replyHtml = (msg.replyToMessageId && msg.replyToMessagePreview) ? (
+      '<div class="reply-preview" style="border-left: 3px solid #a5b5ff; margin-bottom: 6px; padding-left: 10px; font-size: 12px; opacity: 0.85;">' +
+      'Replying to: ' + (msg.replyToMessagePreview || '') +
+      '</div>'
+    ) : '';
+
+    div.innerHTML = senderInfoHtml + replyHtml + content + '<span class="timestamp">' + formatTime(msg.timestamp) + '</span>' + editedIndicator + displayReactions(msg.reactions);
+
+  }
+  
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Wire custom voice UI controls.
+  if (msg.type === "audio") {
+    const wrapper = div.querySelector('.voice-message');
+    const audioEl = div.querySelector('audio.voice-audio');
+    const playBtn = div.querySelector('button.voice-play');
+    const currentEl = div.querySelector('.voice-current');
+    const durationEl = div.querySelector('.voice-duration');
+    const fillEl = div.querySelector('.voice-progress-fill');
+
+    if (wrapper && audioEl && playBtn && currentEl && durationEl && fillEl) {
+      const fmt = (sec) => {
+        if (!isFinite(sec) || sec < 0) sec = 0;
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return m + ':' + s.toString().padStart(2, '0');
+      };
+
+      const setFillFromTime = () => {
+        const dur = audioEl.duration || 0;
+        const cur = audioEl.currentTime || 0;
+        currentEl.textContent = fmt(cur);
+        if (dur) durationEl.textContent = fmt(dur);
+        const pct = dur ? (cur / dur) * 100 : 0;
+        fillEl.style.width = pct.toFixed(2) + '%';
+      };
+
+      const setPlayIcon = (playing) => {
+        const icon = playBtn.querySelector('i');
+        if (!icon) return;
+        if (playing) {
+          icon.className = 'ri-pause-fill';
+        } else {
+          icon.className = 'ri-play-fill';
+        }
+      };
+
+      audioEl.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = fmt(audioEl.duration || 0);
+        setFillFromTime();
+      });
+
+      audioEl.addEventListener('timeupdate', setFillFromTime);
+      audioEl.addEventListener('ended', () => {
+        setPlayIcon(false);
+        fillEl.style.width = '100%';
+      });
+
+      playBtn.addEventListener('click', () => {
+        if (audioEl.paused) {
+          audioEl.play().catch(() => {});
+          setPlayIcon(true);
+        } else {
+          audioEl.pause();
+          setPlayIcon(false);
+        }
+      });
+    }
+  }
+}
+
+
+// =====================
+// SELECTION MODE (for delete)
+// =====================
+
+function enterSelectionMode(messageId) {
+  selectionMode = true;
+  selectedMessages.add(messageId);
+  selectionToolbar.classList.add("show");
+  chatHeader.classList.add("hidden");
+  updateSelectionCount();
+  toggleSelection(messageId);
+}
+
+function exitSelectionMode() {
+  selectionMode = false;
+  selectedMessages.clear();
+  selectionToolbar.classList.remove("show");
+  chatHeader.classList.remove("hidden");
+  document.querySelectorAll(".selected").forEach(el => el.classList.remove("selected"));
+}
+
+function toggleSelection(messageId) {
+  const msgDiv = document.querySelector(`[data-id="${messageId}"]`);
+  if (!msgDiv) return;
+  
+  if (selectedMessages.has(messageId)) {
+    selectedMessages.delete(messageId);
+    msgDiv.classList.remove("selected");
+  } else {
+    selectedMessages.add(messageId);
+    msgDiv.classList.add("selected");
+  }
+  
+  updateSelectionCount();
+  if (selectedMessages.size === 0) exitSelectionMode();
+}
+
+function updateSelectionCount() {
+  document.getElementById("selected-count").textContent = selectedMessages.size;
+}
+
+document.getElementById("close-selection").addEventListener("click", exitSelectionMode);
+
+document.getElementById("delete-selected").addEventListener("click", async function() {
+  if (selectedMessages.size === 0) return;
+
+  const confirmDelete = confirm(`Delete ${selectedMessages.size} message(s)?`);
+  if (!confirmDelete) return;
+
+  try {
+    for (const msgId of selectedMessages) {
+      await updateDoc(doc(db, "messages", msgId), {
+        deleted: true,
+        text: "This message was deleted",
+        deletedAt: serverTimestamp()
+      });
+    }
+    console.log("Messages deleted");
+    exitSelectionMode();
+    await loadMessages(); // Reload to show deleted state
+  } catch (error) {
+    console.error("Error deleting:", error);
+    alert("Error deleting messages");
+  }
+});
+
+
+// =====================
+// WHATSAPP STYLE MESSAGE MENU
+// =====================
+
+let messageMenu = null;
+let currentMsgData = null;
+
+function showMessageMenu(msgDiv, msgId, msgData, event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  // Remove existing menu
+  if (messageMenu) {
+    messageMenu.remove();
+    messageMenu = null;
+  }
+  
+  currentMsgData = msgData;
+  
+  // Create menu like WhatsApp
+  messageMenu = document.createElement("div");
+  messageMenu.className = "message-menu";
+  messageMenu.style.cssText = `
+    position: fixed;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    overflow: hidden;
+    min-width: 150px;
+  `;
+  
+  const isSent = msgData.senderId === currentUser?.uid;
+  
+  let menuItems = [];
+  
+  // Copy option (for all messages)
+  menuItems.push({ label: "Copy", icon: "📋", action: () => copyMessage(msgData) });
+
+  // Reply option (for all messages)
+  menuItems.push({
+    label: "Reply",
+    icon: "↩️",
+    action: () => {
+      showReplyBar(msgData);
+    }
+  });
+  
+// Edit option (only for sent messages, within 15 minutes)
+  const canEdit = isSent && canMessageBeEdited(msgData);
+  if (canEdit) {
+    menuItems.push({ label: "Edit", icon: "✏️", action: () => editMessage(msgId, msgData) });
+  }
+  
+  // Delete option (only for sent messages)
+  if (isSent) {
+    menuItems.push({ label: "Delete", icon: "🗑️", action: () => deleteSingleMessage(msgId) });
+  }
+  
+  // Forward option (for all)
+  menuItems.push({ label: "Forward", icon: "➡️", action: () => forwardMessage(msgId) });
+
+
+  // React option (for all)
+  menuItems.push({ label: "React", icon: "😊", action: () => showReactionPicker(msgId, msgData) });
+  
+  menuItems.forEach(item => {
+    const menuItem = document.createElement("div");
+    menuItem.style.cssText = `
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #333;
+    `;
+    menuItem.innerHTML = `<span>${item.icon}</span> <span>${item.label}</span>`;
+    menuItem.addEventListener("click", function() {
+      item.action();
+      messageMenu.remove();
+      messageMenu = null;
+    });
+    menuItem.addEventListener("mouseover", function() {
+      menuItem.style.background = "#f5f5f5";
+    });
+    menuItem.addEventListener("mouseout", function() {
+      menuItem.style.background = "#fff";
+    });
+    messageMenu.appendChild(menuItem);
+  });
+  
+  // Position menu
+  const rect = msgDiv.getBoundingClientRect();
+  let topPos = rect.top + window.scrollY - 10;
+  let leftPos = rect.left + window.scrollX - 20;
+  
+  // Adjust horizontal position based on message type
+  if (isSent) {
+    leftPos = rect.right + window.scrollX - 170;
+  }
+  
+  messageMenu.style.top = topPos + "px";
+  messageMenu.style.left = leftPos + "px";
+  
+  document.body.appendChild(messageMenu);
+  
+  // Close menu when clicking elsewhere
+  setTimeout(() => {
+    document.addEventListener("click", closeMessageMenu);
+  }, 100);
+}
+
+function closeMessageMenu() {
+  if (messageMenu) {
+    messageMenu.remove();
+    messageMenu = null;
+  }
+  document.removeEventListener("click", closeMessageMenu);
+}
+
+function copyMessage(msgData) {
+  let textToCopy = "";
+  if (msgData.type === "text") {
+    textToCopy = msgData.text || "";
+  } else if (msgData.type === "image") {
+    textToCopy = "[Image]";
+  } else if (msgData.type === "audio") {
+    textToCopy = "[Voice message]";
+  }
+  
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert("Copied to clipboard!");
+  }).catch(err => {
+    console.error("Failed to copy:", err);
+  });
+}
+
+async function deleteSingleMessage(msgId) {
+  const confirmDelete = confirm("Delete this message?");
+  if (!confirmDelete) return;
+
+  try {
+    await updateDoc(doc(db, "messages", msgId), {
+      deleted: true,
+      text: "This message was deleted",
+      deletedAt: serverTimestamp()
+    });
+    console.log("Message deleted");
+    await loadMessages();
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    alert("Error deleting message");
+  }
+}
+
+
+let replyToMessageId = null;
+let replyToMessageData = null;
+
+function showReplyBar(msgData) {
+  replyToMessageId = msgData.id;
+  replyToMessageData = msgData;
+
+  let bar = document.getElementById('reply-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'reply-bar';
+    bar.style.cssText = `
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 72px;
+      z-index: 1200;
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(0,0,0,0.08);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 -6px 25px rgba(0,0,0,0.08);
+    `;
+
+    bar.innerHTML = `
+      <div style="width: 4px; height: 34px; background: #667eea; border-radius: 6px;"></div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 12px; color: #667eea; font-weight: 700;">Replying to</div>
+        <div id="reply-bar-title" style="font-size: 13px; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75vw;"> </div>
+      </div>
+      <button id="reply-bar-cancel" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #333;">&times;</button>
+    `;
+
+    document.body.appendChild(bar);
+
+    document.getElementById('reply-bar-cancel').addEventListener('click', () => {
+      clearReplyBar();
+    });
+  }
+
+  const titleEl = document.getElementById('reply-bar-title');
+  if (titleEl) {
+    const sender = msgData.senderId === currentUser?.uid ? 'You' : (msgData.senderName || 'Message');
+    let preview = '';
+    if (msgData.type === 'text') preview = msgData.text || '';
+    else if (msgData.type === 'image') preview = 'Photo';
+    else if (msgData.type === 'audio') preview = 'Voice message';
+    else if (msgData.type === 'document') preview = msgData.documentName || 'Document';
+    else preview = msgData.type || 'Message';
+
+    titleEl.textContent = `${sender}: ${preview}`;
+  }
+
+  bar.style.transform = 'translateX(0)';
+  bar.style.transition = 'transform 180ms ease';
+}
+
+function clearReplyBar() {
+  replyToMessageId = null;
+  replyToMessageData = null;
+  const bar = document.getElementById('reply-bar');
+  if (bar) {
+    bar.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (bar) bar.remove();
+    }, 180);
+  }
+}
+
+function forwardMessage(msgId) {
+  alert("Forward feature coming soon!");
+}
+
+
+// =====================
+// REACTION PICKER & HANDLING
+// =====================
+
+const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "👎", "🔥"];
+
+let reactionPicker = null;
+let currentMsgForReaction = null;
+
+function showReactionPicker(msgId, msgData) {
+  // Close existing picker
+  if (reactionPicker) {
+    reactionPicker.remove();
+    reactionPicker = null;
+  }
+  
+  currentMsgForReaction = msgId;
+  
+  // Create reaction picker
+  reactionPicker = document.createElement("div");
+  reactionPicker.className = "reaction-picker";
+  reactionPicker.style.cssText = `
+    position: fixed;
+    background: #fff;
+    border-radius: 25px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.25);
+    z-index: 1001;
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+    animation: fadeIn 0.2s ease;
+  `;
+  
+  // Add animation style
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Get user's current reaction on this message
+  const currentReactions = msgData.reactions || [];
+  const userReaction = currentReactions.find(r => r.userId === currentUser?.uid);
+  
+  REACTION_EMOJIS.forEach(emoji => {
+    const btn = document.createElement("button");
+    btn.style.cssText = `
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: transform 0.15s, background 0.15s;
+    `;
+    btn.textContent = emoji;
+    
+    // Highlight if user has this reaction
+    if (userReaction && userReaction.emoji === emoji) {
+      btn.style.background = "#e8f5e9";
+      btn.style.transform = "scale(1.2)";
+    }
+    
+    btn.addEventListener("click", () => toggleReaction(emoji, msgId, msgData));
+    btn.addEventListener("mouseenter", () => {
+      btn.style.transform = "scale(1.3)";
+      btn.style.background = "#f5f5f5";
+    });
+    btn.addEventListener("mouseleave", () => {
+      if (!userReaction || userReaction.emoji !== emoji) {
+        btn.style.transform = "scale(1)";
+        btn.style.background = "none";
+      }
+    });
+    
+    reactionPicker.appendChild(btn);
+  });
+  
+  // Position the picker near the message
+  const msgDiv = document.querySelector(`[data-id="${msgId}"]`);
+  if (msgDiv) {
+    const rect = msgDiv.getBoundingClientRect();
+    let topPos = rect.bottom + window.scrollY + 5;
+    let leftPos = rect.left + window.scrollX + 10;
+    
+    // Adjust for sent vs received messages
+    if (msgData.senderId === currentUser?.uid) {
+      leftPos = rect.right + window.scrollX - 200;
+    }
+    
+    reactionPicker.style.top = topPos + "px";
+    reactionPicker.style.left = leftPos + "px";
+  }
+  
+  document.body.appendChild(reactionPicker);
+  
+  // Close picker when clicking elsewhere
+  setTimeout(() => {
+    document.addEventListener("click", closeReactionPicker);
+  }, 100);
+}
+
+function closeReactionPicker() {
+  if (reactionPicker) {
+    reactionPicker.remove();
+    reactionPicker = null;
+  }
+  currentMsgForReaction = null;
+  document.removeEventListener("click", closeReactionPicker);
+}
+
+async function toggleReaction(emoji, msgId, msgData) {
+  if (!currentUser) return;
+  
+  const currentReactions = msgData.reactions || [];
+  const existingIndex = currentReactions.findIndex(r => r.userId === currentUser.uid);
+  
+  try {
+    if (existingIndex >= 0) {
+      // User already has a reaction - check if same emoji
+      if (currentReactions[existingIndex].emoji === emoji) {
+        // Same emoji - remove reaction
+        await removeReaction(msgId, currentReactions, existingIndex);
+      } else {
+        // Different emoji - update reaction
+        await updateReaction(msgId, currentReactions, existingIndex, emoji);
+      }
+    } else {
+      // No existing reaction - add new one
+      await addReaction(msgId, currentReactions, emoji);
+    }
+    
+    closeReactionPicker();
+  } catch (error) {
+    console.error("Error toggling reaction:", error);
+  }
+}
+
+async function addReaction(msgId, currentReactions, emoji) {
+  // Get user's name
+  let userName = "User";
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      userName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || "User";
+    }
+  } catch (error) {
+    console.error("Error getting user name:", error);
+  }
+  
+  const newReaction = {
+    emoji: emoji,
+    userId: currentUser.uid,
+    userName: userName,
+    timestamp: Date.now()
+  };
+  
+  const updatedReactions = [...currentReactions, newReaction];
+  
+  await updateDoc(doc(db, "messages", msgId), {
+    reactions: updatedReactions
+  });
+  
+  console.log("Reaction added:", emoji);
+}
+
+async function removeReaction(msgId, currentReactions, reactionIndex) {
+  const updatedReactions = currentReactions.filter((_, index) => index !== reactionIndex);
+  
+  await updateDoc(doc(db, "messages", msgId), {
+    reactions: updatedReactions
+  });
+  
+  console.log("Reaction removed");
+}
+
+async function updateReaction(msgId, currentReactions, reactionIndex, newEmoji) {
+  // Get user's name
+  let userName = "User";
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      userName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || "User";
+    }
+  } catch (error) {
+    console.error("Error getting user name:", error);
+  }
+  
+  const updatedReactions = [...currentReactions];
+  updatedReactions[reactionIndex] = {
+    emoji: newEmoji,
+    userId: currentUser.uid,
+    userName: userName,
+    timestamp: Date.now()
+  };
+  
+  await updateDoc(doc(db, "messages", msgId), {
+    reactions: updatedReactions
+  });
+  
+  console.log("Reaction updated to:", newEmoji);
+}
+
+function displayReactions(reactions) {
+  if (!reactions || reactions.length === 0) return "";
+  
+  // Group reactions by emoji
+  const grouped = {};
+  reactions.forEach(r => {
+    if (!grouped[r.emoji]) {
+      grouped[r.emoji] = [];
+    }
+    grouped[r.emoji].push(r);
+  });
+  
+  // Build reaction display
+  let html = '<div class="message-reactions">';
+  
+  // Show each emoji with count and first user's name
+  Object.keys(grouped).forEach(emoji => {
+    const users = grouped[emoji];
+    const count = users.length;
+    const firstUser = users[0];
+    
+    // Check if current user reacted
+    const isCurrentUser = users.some(r => r.userId === currentUser?.uid);
+    
+    html += `<span class="reaction-badge ${isCurrentUser ? 'user-reacted' : ''}" data-emoji="${emoji}">`;
+    html += emoji;
+    if (count > 1) {
+      html += ` <span class="reaction-count">${count}</span>`;
+    }
+    html += `</span>`;
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+// =====================
+// MESSAGE EDITING
+// =====================
+
+const MESSAGE_EDIT_TIME_LIMIT = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+// Check if message can be edited (within 15 minutes)
+function canMessageBeEdited(msgData) {
+  if (!msgData.timestamp) return false;
+  
+  const msgTime = msgData.timestamp.toDate ? msgData.timestamp.toDate().getTime() : new Date(msgData.timestamp).getTime();
+  const now = Date.now();
+  const timeDiff = now - msgTime;
+  
+  return timeDiff < MESSAGE_EDIT_TIME_LIMIT;
+}
+
+// Edit message function
+async function editMessage(msgId, msgData) {
+  if (msgData.type !== "text") {
+    alert("Only text messages can be edited");
+    return;
+  }
+  
+  const newText = prompt("Edit your message:", msgData.text);
+
+  
+  if (newText === null || newText.trim() === "") return;
+  if (newText.trim() === msgData.text) return;
+  
+  try {
+    await updateDoc(doc(db, "messages", msgId), {
+      text: newText.trim(),
+      edited: true,
+      editedAt: serverTimestamp()
+    });
+    
+    console.log("Message edited");
+    await loadMessages();
+  } catch (error) {
+    console.error("Error editing message:", error);
+    alert("Error editing message");
+  }
+}
+
+// =====================
+// SEND MESSAGE
+// =====================
+
+// Ensure chat entry exists before sending message
+async function ensureChatExists() {
+  if (!currentUser || !contactId) return;
+  
+  const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  if (!userDoc.exists()) return;
+  
+  const userData = userDoc.data();
+  const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+  
+  // Check if chat already exists
+  if (!userData.chats || !userData.chats.find(chat => chat.chatId === chatId)) {
+    // Create chat entry for current user
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      chats: arrayUnion({ chatId: chatId, contactId: contactId })
+    });
+    
+    // Create chat entry for contact
+    const contactDoc = await getDoc(doc(db, "users", contactId));
+    if (contactDoc.exists()) {
+      const contactData = contactDoc.data();
+      await updateDoc(doc(db, "users", contactId), {
+        chats: arrayUnion({ chatId: chatId, contactId: currentUser.uid })
+      });
+    }
+    
+    // Create chat document
+    await setDoc(doc(db, "chats", chatId), { messages: [] });
+    
+    console.log("Chat entry created");
+  }
+}
+
+async function sendMessage() {
+  const text = messageInput.value.trim();
+  if (!text || !currentUser || !contactId) return;
+
+  
+  try {
+    // Ensure chat entry exists before sending
+    await ensureChatExists();
+    
+    // Get current user's profile info for group messages
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+    const senderName = isGroupChat ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() : null;
+    const senderImage = userData.profileImageUrl || null;
+    
+    // Prepare message data
+    const messageData = {
+      type: "text",
+      text: text,
+      senderId: currentUser.uid,
+      receiverId: contactId,
+      timestamp: serverTimestamp(),
+      read: false,
+      // WhatsApp-like reply metadata (optional)
+      replyToMessageId: replyToMessageId || null,
+      replyToMessagePreview: replyToMessageId ? (replyToMessageData?.senderId === currentUser?.uid ? 'You' : (replyToMessageData?.senderName || 'Message')) + ': ' + (replyToMessageData?.type === 'text' ? (replyToMessageData?.text || '') : replyToMessageData?.type === 'image' ? 'Photo' : replyToMessageData?.type === 'audio' ? 'Voice message' : replyToMessageData?.type === 'document' ? (replyToMessageData?.documentName || 'Document') : (replyToMessageData?.type || 'Message')) : null
+    };
+
+    
+    // Add sender info for group messages
+    if (isGroupChat) {
+      messageData.senderName = senderName;
+      messageData.senderImage = senderImage;
+      messageData.isGroupMessage = true;
+      messageData.groupId = groupId;
+    }
+    
+    await addDoc(collection(db, "messages"), messageData);
+    
+    console.log("Sent:", text);
+    messageInput.value = "";
+    
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error: " + error.message);
+  }
+}
+
+sendButton.addEventListener("click", sendMessage);
+messageInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+// =====================
+// VOICE RECORDING WITH WAVEFORM ANIMATION
+// =====================
+
+const voiceRecordingUI = document.getElementById("voice-recording-ui");
+const waveformCanvas = document.getElementById("waveform-canvas");
+const recordingTimer = document.getElementById("recording-timer");
+const pauseRecordingBtn = document.getElementById("pause-recording");
+const cancelRecordingBtn = document.getElementById("cancel-recording");
+let timerInterval = null;
+
+voiceRecordBtn.addEventListener("mousedown", startRecording);
+voiceRecordBtn.addEventListener("touchstart", startRecording);
+voiceRecordBtn.addEventListener("mouseup", stopRecording);
+voiceRecordBtn.addEventListener("mouseleave", stopRecording);
+voiceRecordBtn.addEventListener("touchend", stopRecording);
+
+// Pause/Resume button
+pauseRecordingBtn.addEventListener("click", togglePauseRecording);
+cancelRecordingBtn.addEventListener("click", cancelRecording);
+
+function togglePauseRecording() {
+  if (!mediaRecorder) return;
+  
+  if (isPaused) {
+    // Resume recording
+    mediaRecorder.resume();
+    isPaused = false;
+    pauseRecordingBtn.innerHTML = '<i class="ri-pause-fill"></i>';
+    recordingTimer.style.color = "#333";
+    // Resume timer
+    recordingStartTime = Date.now() - pausedTime;
+    timerInterval = setInterval(updateRecordingTimer, 1000);
+    // Resume waveform animation
+    if (animationId) cancelAnimationFrame(animationId);
+    drawWaveform();
+    console.log("Recording resumed");
+  } else {
+    // Pause recording
+    mediaRecorder.pause();
+    isPaused = true;
+    pausedTime = Date.now() - recordingStartTime;
+    pauseRecordingBtn.innerHTML = '<i class="ri-play-fill"></i>';
+    recordingTimer.style.color = "#e74c3c";
+    // Pause timer
+    clearInterval(timerInterval);
+    // Pause waveform
+    if (animationId) cancelAnimationFrame(animationId);
+    console.log("Recording paused");
+  }
+}
+
+function cancelRecording() {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    isRecording = false;
+    isPaused = false;
+    clearInterval(timerInterval);
+    if (animationId) cancelAnimationFrame(animationId);
+    voiceRecordingUI.style.display = "none";
+    voiceRecordBtn.classList.remove("recording");
+    messageInput.placeholder = "Type your message...";
+    if (recordingTimeout) clearTimeout(recordingTimeout);
+    console.log("Recording cancelled");
+  }
+}
+
+function updateRecordingTimer() {
+  if (!recordingStartTime) return;
+  
+  const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+  const minutes = Math.floor(elapsed / 60);
+  const seconds = elapsed % 60;
+  recordingTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function drawWaveform() {
+  if (!audioContext || !analyser || !isRecording || isPaused) return;
+  
+  const canvas = waveformCanvas;
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  
+  analyser.getByteTimeDomainData(dataArray);
+  
+  ctx.fillStyle = "#f0f0f0";
+  ctx.fillRect(0, 0, width, height);
+  
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = isPaused ? "#e74c3c" : "#667eea";
+  ctx.beginPath();
+  
+  const sliceWidth = width / dataArray.length;
+  let x = 0;
+  
+  for (let i = 0; i < dataArray.length; i++) {
+    const v = dataArray[i] / 128.0;
+    const y = (v * height) / 2;
+    
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+    
+    x += sliceWidth;
+  }
+  
+  ctx.lineTo(canvas.width, canvas.height / 2);
+  ctx.stroke();
+  
+  animationId = requestAnimationFrame(drawWaveform);
+}
+
+async function startRecording(e) {
+  e.preventDefault();
+  console.log("Starting recording...");
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Pick a supported mime type (best-effort) to improve iOS compatibility.
+    const mimeCandidates = [
+      'audio/mp4',
+      'audio/mpeg',
+      'audio/webm;codecs=opus',
+      'audio/webm'
+    ];
+    const supported = (window.MediaRecorder && MediaRecorder.isTypeSupported)
+      ? mimeCandidates.find(m => MediaRecorder.isTypeSupported(m))
+      : null;
+
+    const recorderOptions = supported ? { mimeType: supported } : undefined;
+    mediaRecorder = supported ? new MediaRecorder(stream, recorderOptions) : new MediaRecorder(stream);
+
+    audioChunks = [];
+
+    // Set up audio context for waveform visualization
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaStreamSource(stream);
+    source.connect(analyser);
+    analyser.fftSize = 2048;
+    dataArray = new Uint8Array(analyser.fftSize);
+
+    mediaRecorder.ondataavailable = function(event) {
+      if (event.data && event.data.size > 0) audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = async function() {
+      stream.getTracks().forEach(track => track.stop());
+
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+
+      if (audioChunks.length === 0) return;
+
+      const blobType = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : "audio/webm";
+      const audioBlob = new Blob(audioChunks, { type: blobType });
+
+      try {
+        sendButton.disabled = true;
+        messageInput.placeholder = "Uploading voice...";
+        voiceRecordingUI.style.display = "none";
+
+        // Ensure chat entry exists before sending
+        await ensureChatExists();
+
+        // Choose extension for storage based on mimeType
+        let ext = "webm";
+        if (blobType.includes('mp4') || blobType.includes('mpeg')) ext = 'mp4';
+        else if (blobType.includes('ogg')) ext = 'ogg';
+        else if (blobType.includes('webm')) ext = 'webm';
+
+        const storageRef = ref(storage, "audio/" + currentUser.uid + "/" + Date.now() + "_voice." + ext);
+        const snapshot = await uploadBytes(storageRef, audioBlob);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        await addDoc(collection(db, "messages"), {
+          type: "audio",
+          audioUrl: downloadURL,
+          senderId: currentUser.uid,
+          receiverId: contactId,
+          timestamp: serverTimestamp(),
+          read: false
+        });
+
+        console.log("Voice sent!");
+      } catch (error) {
+        console.error("Error sending voice:", error);
+      } finally {
+        sendButton.disabled = false;
+        messageInput.placeholder = "Type your message...";
+        voiceRecordBtn.classList.remove("recording");
+        isPaused = false;
+        pausedTime = 0;
+        clearInterval(timerInterval);
+      }
+    };
+
+    // Show recording UI
+    voiceRecordingUI.style.display = "flex";
+    recordingTimer.textContent = "0:00";
+    pauseRecordingBtn.innerHTML = '<i class="ri-pause-fill"></i>';
+
+    // Start recording
+    mediaRecorder.start(100);
+    isRecording = true;
+    isPaused = false;
+    recordingStartTime = Date.now();
+    pausedTime = 0;
+    voiceRecordBtn.classList.add("recording");
+    messageInput.placeholder = "Recording... Release to send";
+
+    // Start timer
+    timerInterval = setInterval(updateRecordingTimer, 1000);
+
+    // Start waveform animation
+    drawWaveform();
+
+    // Auto-stop after 5 minutes
+    recordingTimeout = setTimeout(() => {
+      if (isRecording) stopRecording();
+    }, 300000);
+
+  } catch (error) {
+    console.error("Error accessing microphone:", error);
+    alert("Error accessing microphone: " + error.message);
+  }
+}
+
+
+function stopRecording(e) {
+  if (e) e.preventDefault();
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    isRecording = false;
+    isPaused = false;
+    voiceRecordBtn.classList.remove("recording");
+    messageInput.placeholder = "Type your message...";
+    if (recordingTimeout) clearTimeout(recordingTimeout);
+    clearInterval(timerInterval);
+    voiceRecordingUI.style.display = "none";
+  }
+}
+
+// =====================
+// ATTACHMENT MENU
+// =====================
+
+attachBtn.addEventListener("click", function(e) {
+  e.stopPropagation();
+  attachMenu.classList.toggle("show");
+});
+
+document.addEventListener("click", function() {
+  attachMenu.classList.remove("show");
+});
+
+// =====================
+// MULTI-IMAGE GALLERY & MEDIA PREVIEW
+// =====================
+
+const multiImageInput = document.getElementById("multi-image-input");
+let selectedImages = [];
+let currentPreviewIndex = 0;
+
+// Use multi-image input for gallery style selection
+photoOption.addEventListener("click", function(e) {
+  e.stopPropagation();
+  attachMenu.classList.remove("show");
+  multiImageInput.click();
+});
+
+multiImageInput.addEventListener("change", function(e) {
+  const files = Array.from(e.target.files);
+  if (files.length === 0) return;
+  
+  selectedImages = files;
+  showMediaPreview();
+});
+
+function showMediaPreview() {
+  if (selectedImages.length === 0) return;
+  
+  const modal = document.getElementById("media-preview-modal");
+  const previewContent = document.getElementById("preview-content");
+  const previewThumbnails = document.getElementById("preview-thumbnails");
+  const previewCount = document.getElementById("preview-count");
+  const sendCount = document.getElementById("send-count");
+  
+  // Show count
+  previewCount.textContent = selectedImages.length + " photo" + (selectedImages.length > 1 ? "s" : "") + " selected";
+  sendCount.textContent = selectedImages.length > 1 ? "(" + selectedImages.length + ")" : "";
+  
+  // Show first image
+  showPreviewImage(0);
+  
+  // Generate thumbnails
+  previewThumbnails.innerHTML = "";
+  selectedImages.forEach(function(file, index) {
+    const thumb = document.createElement("div");
+    thumb.style.cssText = "width: 60px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid " + (index === 0 ? "#667eea" : "transparent") + "; position: relative; flex-shrink: 0;";
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      thumb.innerHTML = '<img src="' + e.target.result + '" style="width: 100%; height: 100%; object-fit: cover;">';
+    };
+    reader.readAsDataURL(file);
+    
+    thumb.addEventListener("click", function() { showPreviewImage(index); });
+    previewThumbnails.appendChild(thumb);
+  });
+  
+  modal.style.display = "flex";
+}
+
+function showPreviewImage(index) {
+  currentPreviewIndex = index;
+  const previewContent = document.getElementById("preview-content");
+  const previewThumbnails = document.getElementById("preview-thumbnails");
+  
+  // Update thumbnails selection
+  Array.from(previewThumbnails.children).forEach(function(thumb, i) {
+    thumb.style.borderColor = i === index ? "#667eea" : "transparent";
+  });
+  
+  const file = selectedImages[index];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    previewContent.innerHTML = '<img src="' + e.target.result + '" style="max-width: 100%; max-height: 100%; border-radius: 8px;">';
+  };
+  reader.readAsDataURL(file);
+}
+
+// Preview modal event handlers
+document.getElementById("close-preview-modal").addEventListener("click", closeMediaPreview);
+document.getElementById("cancel-preview").addEventListener("click", closeMediaPreview);
+
+function closeMediaPreview() {
+  document.getElementById("media-preview-modal").style.display = "none";
+  selectedImages = [];
+  multiImageInput.value = "";
+}
+
+// Add more photos button
+document.getElementById("add-more-photos").addEventListener("click", function() {
+  // Create a new input for additional photos
+  const additionalInput = document.createElement("input");
+  additionalInput.type = "file";
+  additionalInput.accept = "image/*";
+  additionalInput.multiple = true;
+  additionalInput.style.display = "none";
+  document.body.appendChild(additionalInput);
+  
+  additionalInput.addEventListener("change", function(e) {
+    const newFiles = Array.from(e.target.files);
+    if (newFiles.length > 0) {
+      selectedImages = selectedImages.concat(newFiles);
+      showMediaPreview();
+    }
+    additionalInput.remove();
+  });
+  
+  additionalInput.click();
+});
+
+// Send preview - upload all images
+document.getElementById("send-preview").addEventListener("click", async function() {
+  if (selectedImages.length === 0 || !currentUser) return;
+  
+  const sendBtn = document.getElementById("send-preview");
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Sending...";
+  
+  try {
+    await ensureChatExists();
+    
+    // Upload each image
+    for (const file of selectedImages) {
+      const storageRef = ref(storage, "images/" + currentUser.uid + "/" + Date.now() + "_" + file.name);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      
+      await addDoc(collection(db, "messages"), {
+        type: "image",
+        imageUrl: downloadURL,
+        senderId: currentUser.uid,
+        receiverId: contactId,
+        timestamp: serverTimestamp(),
+        read: false
+      });
+    }
+    
+    console.log("Sent " + selectedImages.length + " images");
+    closeMediaPreview();
+  } catch (error) {
+    console.error("Error sending images:", error);
+    alert("Error sending images: " + error.message);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = 'Send <span id="send-count"></span>';
+  }
+});
+
+// =====================
+// DOCUMENT UPLOAD & VIEWER
+// =====================
+
+const documentInput = document.getElementById("document-input");
+const documentOption = document.getElementById("document-option");
+let currentDocumentUrl = null;
+let currentDocumentName = null;
+
+documentOption.addEventListener("click", function(e) {
+  e.stopPropagation();
+  attachMenu.classList.remove("show");
+  documentInput.click();
+});
+
+documentInput.addEventListener("change", async function(e) {
+  const file = e.target.files[0];
+  if (!file || !currentUser) return;
+  
+  try {
+    sendButton.disabled = true;
+    messageInput.placeholder = "Uploading document...";
+    
+    await ensureChatExists();
+    
+    const storageRef = ref(storage, "documents/" + currentUser.uid + "/" + Date.now() + "_" + file.name);
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    await addDoc(collection(db, "messages"), {
+      type: "document",
+      documentUrl: downloadURL,
+      documentName: file.name,
+      documentSize: file.size,
+      documentType: file.type,
+      senderId: currentUser.uid,
+      receiverId: contactId,
+      timestamp: serverTimestamp(),
+      read: false
+    });
+    
+    console.log("Document sent:", file.name);
+  } catch (error) {
+    console.error("Error uploading document:", error);
+    alert("Error uploading document: " + error.message);
+  } finally {
+    sendButton.disabled = false;
+    messageInput.placeholder = "Type your message...";
+    documentInput.value = "";
+  }
+});
+
+// Document viewer functions
+function showDocumentViewer(url, fileName) {
+  currentDocumentUrl = url;
+  currentDocumentName = fileName;
+  
+  const modal = document.getElementById("document-viewer-modal");
+  const documentName = document.getElementById("document-name");
+  const documentContent = document.getElementById("document-content");
+  
+  documentName.textContent = fileName;
+  
+  // Check file type and display accordingly
+  const extension = fileName.split(".").pop().toLowerCase();
+  
+  if (extension === "pdf") {
+    // Display PDF
+    documentContent.innerHTML = '<iframe src="' + url + '" style="width: 100%; height: 70vh; border: none; border-radius: 8px;"></iframe>';
+  } else if (["doc", "docx"].indexOf(extension) !== -1) {
+
+
+    // For Word docs, show a preview message
+    documentContent.innerHTML = '<div style="text-align: center; color: white;"><i class="ri-file-word-line" style="font-size: 80px; color: #2196F3;"></i><p style="margin-top: 20px;">' + fileName + '</p><p style="color: #aaa;">Word Document</p></div>';
+  } else if (["xls", "xlsx"].indexOf(extension) !== -1) {
+    documentContent.innerHTML = '<div style="text-align: center; color: white;"><i class="ri-file-excel-line" style="font-size: 80px; color: #4CAF50;"></i><p style="margin-top: 20px;">' + fileName + '</p><p style="color: #aaa;">Excel Spreadsheet</p></div>';
+  } else if (extension === "txt") {
+    // Fetch and display text content
+    fetch(url)
+      .then(function(response) { return response.text(); })
+      .then(function(text) {
+        documentContent.innerHTML = '<pre style="color: white; background: #333; padding: 20px; border-radius: 8px; max-width: 80vw; max-height: 70vh; overflow: auto; white-space: pre-wrap;">' + text + "</pre>";
+      })
+      .catch(function(err) {
+        documentContent.innerHTML = '<p style="color: white;">Unable to preview this file</p>';
+      });
+  } else {
+    // Default file icon
+    documentContent.innerHTML = '<div style="text-align: center; color: white;"><i class="ri-file-line" style="font-size: 80px; color: #9E9E9E;"></i><p style="margin-top: 20px;">' + fileName + "</p></div>";
+  }
+  
+  modal.style.display = "flex";
+}
+
+// Document modal event handlers
+document.getElementById("close-document-modal").addEventListener("click", function() {
+  document.getElementById("document-viewer-modal").style.display = "none";
+});
+
+document.getElementById("close-document").addEventListener("click", function() {
+  document.getElementById("document-viewer-modal").style.display = "none";
+});
+
+document.getElementById("download-document").addEventListener("click", function() {
+  if (currentDocumentUrl) {
+    window.open(currentDocumentUrl, "_blank");
+  }
+});
+
+// =====================
+// SEND TO CONTACT FUNCTIONALITY
+// =====================
+
+let pendingDocumentForSending = null;
+
+document.getElementById("send-to-contact").addEventListener("click", async function() {
+  if (!currentDocumentUrl || !currentUser) {
+    alert("No document selected");
+    return;
+  }
+  
+  // Show contact selection modal
+  const contactModal = document.getElementById("contact-select-modal");
+  const contactList = document.getElementById("contact-list");
+  
+  // Store pending document
+  pendingDocumentForSending = {
+    url: currentDocumentUrl,
+    name: currentDocumentName
+  };
+  
+  // Load contacts
+  contactList.innerHTML = '<div style="padding: 20px; text-align: center;">Loading contacts...</div>';
+  
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if (!userDoc.exists()) {
+      contactList.innerHTML = '<div style="padding: 20px; text-align: center;">No contacts found</div>';
+      return;
+    }
+    
+    const userData = userDoc.data();
+    const contacts = userData.contacts || [];
+    
+    if (contacts.length === 0) {
+      contactList.innerHTML = '<div style="padding: 20px; text-align: center;">No contacts yet. Add contacts first!</div>';
+      return;
+    }
+    
+    contactList.innerHTML = "";
+    
+    for (const contactId of contacts) {
+      const contactDoc = await getDoc(doc(db, "users", contactId));
+      if (contactDoc.exists()) {
+        const contactData = contactDoc.data();
+        const contactDiv = document.createElement("div");
+        contactDiv.style.cssText = "display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer;";
+        contactDiv.innerHTML = `
+          <img src="${contactData.profileImageUrl || 'images/default-profile.png'}" style="width: 50px; height: 50px; border-radius: 50%;">
+          <div style="flex: 1;">
+            <div style="font-weight: 500;">${contactData.firstName || ''} ${contactData.lastName || ''}</div>
+            <div style="font-size: 12px; color: #666;">${contactData.mobileNumber || ''}</div>
+          </div>
+        `;
+        
+        contactDiv.addEventListener("click", async () => {
+          await sendDocumentToContact(contactId, contactData);
+        });
+        
+        contactList.appendChild(contactDiv);
+      }
+    }
+    
+    contactModal.style.display = "flex";
+    
+  } catch (error) {
+    console.error("Error loading contacts:", error);
+    contactList.innerHTML = '<div style="padding: 20px; text-align: center;">Error loading contacts</div>';
+  }
+});
+
+async function sendDocumentToContact(contactId, contactData) {
+  if (!pendingDocumentForSending || !currentUser) return;
+  
+  const sendBtn = document.getElementById("send-to-contact");
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<i class="ri-loader-line"></i> Sending...';
+  
+  try {
+    // Create chat if not exists
+    const chatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+    
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      if (!userData.chats || !userData.chats.find(c => c.chatId === chatId)) {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          chats: arrayUnion({ chatId: chatId, contactId: contactId })
+        });
+        
+        await updateDoc(doc(db, "users", contactId), {
+          chats: arrayUnion({ chatId: chatId, contactId: currentUser.uid })
+        });
+        
+        await setDoc(doc(db, "chats", chatId), { messages: [] });
+      }
+    }
+    
+    // Send document as message
+    await addDoc(collection(db, "messages"), {
+      type: "document",
+      documentUrl: pendingDocumentForSending.url,
+      documentName: pendingDocumentForSending.name || "Document",
+      documentSize: 0,
+      senderId: currentUser.uid,
+      receiverId: contactId,
+      timestamp: serverTimestamp(),
+      read: false
+    });
+    
+    alert("Document sent to " + (contactData.firstName + " " + contactData.lastName));
+    
+    // Close modals
+    document.getElementById("contact-select-modal").style.display = "none";
+    document.getElementById("document-viewer-modal").style.display = "none";
+    
+    pendingDocumentForSending = null;
+    
+  } catch (error) {
+    console.error("Error sending document:", error);
+    alert("Error sending document: " + error.message);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<i class="ri-send-plane-line"></i> Send to Contact';
+  }
+}
+
+// Close contact modal
+document.getElementById("close-contact-modal").addEventListener("click", function() {
+  document.getElementById("contact-select-modal").style.display = "none";
+  pendingDocumentForSending = null;
+});
+
+// Single image upload handler
+imageInput.addEventListener("change", async function(e) {
+  const file = e.target.files[0];
+  if (!file || !currentUser) return;
+  
+  try {
+    sendButton.disabled = true;
+    messageInput.placeholder = "Uploading image...";
+    
+    // Ensure chat entry exists before sending
+    await ensureChatExists();
+    
+    const storageRef = ref(storage, "images/" + currentUser.uid + "/" + Date.now() + "_" + file.name);
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    await addDoc(collection(db, "messages"), {
+      type: "image",
+      imageUrl: downloadURL,
+      senderId: currentUser.uid,
+      receiverId: contactId,
+      timestamp: serverTimestamp(),
+      read: false
+    });
+    
+    console.log("Image sent");
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    alert("Error uploading image: " + error.message);
+  } finally {
+    sendButton.disabled = false;
+    messageInput.placeholder = "Type your message...";
+    imageInput.value = "";
+  }
+});
+
+// =====================
+// NAVIGATION
+// =====================
+
+document.getElementById("contact-info-btn").addEventListener("click", function() {
+  window.location.href = "contact-info.html?contactId=" + contactId;
+});
+
+document.getElementById("call-btn").addEventListener("click", async function() {
+  if (!currentUser || !contactId) return;
+  const callChatId = currentUser.uid < contactId ? "chat_" + currentUser.uid + "_" + contactId : "chat_" + contactId + "_" + currentUser.uid;
+  try {
+    await updateDoc(doc(db, "users", contactId), {
+      incomingCall: { from: currentUser.uid, callerName: currentUser.firstName || "User", chatId: callChatId }
+    });
+    window.location.href = "calling.html?contactId=" + contactId + "&chatId=" + callChatId;
+  } catch (error) {
+    console.error("Call error:", error);
+  }
+});
+
+// =====================
+// NOTIFICATION SYSTEM FOR CHATTING
+// =====================
+
+// Handle new message notification - simplified version
+function handleNewMessageNotification(msg) {
+  // Only notify for received messages
+  if (msg.senderId === currentUser?.uid) return;
+  
+  // Get current contact/group from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentContactId = urlParams.get("contactId");
+  const currentGroupId = urlParams.get("groupId");
+  
+  // Don't show notification if we're in the chat with this person
+  if (msg.senderId === currentContactId || msg.senderId === currentGroupId) return;
+  
+  // Increment badge count for new messages
+  if (window.incrementBadge) {
+    window.incrementBadge();
+    if (window.updateBadgeDisplay) {
+      window.updateBadgeDisplay(window.getUnreadCount());
+    }
+  }
+  
+  // Show push notification if available
+  if (window.showNotification) {
+    const prefs = window.getNotificationPrefs ? window.getNotificationPrefs() : { pushEnabled: true };
+    if (prefs.pushEnabled) {
+      window.showNotification({
+        title: msg.senderName || 'New Message',
+        body: msg.type === 'text' ? msg.text : (msg.type === 'image' ? 'Sent a photo' : 'Sent a voice message')
+      }, {
+        contactId: msg.senderId,
+        groupId: msg.groupId,
+        messageId: msg.id
+      });
+    }
+  }
+}
+
+// =====================
+// INIT
+// =====================
+
+// =====================
+// TYPING INDICATOR
+// =====================
+
+let typingTimeout = null;
+const TYPING_TIMEOUT_MS = 2000;
+
+// Function to set typing status in Firebase
+async function setTypingStatus(isTyping) {
+  if (!currentUser || !contactId) return;
+  
+  try {
+    await updateDoc(doc(db, "users", currentUser.uid), {
+      typing: isTyping,
+      typingTo: isTyping ? contactId : null,
+      typingAt: isTyping ? Date.now() : null
+    });
+  } catch (error) {
+    console.error("Error setting typing status:", error);
+  }
+}
+
+// Listen for typing input
+messageInput.addEventListener("input", function() {
+  setTypingStatus(true);
+  
+  if (typingTimeout) clearTimeout(typingTimeout);
+  
+  typingTimeout = setTimeout(() => {
+    setTypingStatus(false);
+  }, TYPING_TIMEOUT_MS);
+});
+
+// Clear typing when message is sent
+messageInput.addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    setTypingStatus(false);
+    if (typingTimeout) clearTimeout(typingTimeout);
+  }
+});
+
+// Listen for contact's typing status
+function setupTypingListener() {
+  if (!contactId) return;
+  
+  const contactRef = doc(db, "users", contactId);
+  onSnapshot(contactRef, function(snapshot) {
+    if (snapshot.exists()) {
+      const contactData = snapshot.data();
+      const typingIndicator = document.getElementById("typing-indicator");
+      const typingText = document.getElementById("typing-text");
+      
+      if (contactData.typing && contactData.typingTo === currentUser?.uid) {
+        typingIndicator.style.display = "block";
+        typingText.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div> typing...';
+      } else {
+        typingIndicator.style.display = "none";
+      }
+    }
+  });
+}
+
+// =====================
+// MESSAGE SEEN STATUS
+// =====================
+
+function updateMessageStatus(msgId, isRead) {
+  const msgDiv = document.querySelector(`[data-id="${msgId}"]`);
+  if (!msgDiv) return;
+  
+  let statusSpan = msgDiv.querySelector(".message-status");
+  if (!statusSpan) {
+    statusSpan = document.createElement("span");
+    statusSpan.className = "message-status";
+    msgDiv.appendChild(statusSpan);
+  }
+  
+  if (isRead) {
+    statusSpan.innerHTML = "✓✓";
+    statusSpan.classList.add("seen");
+  } else {
+    statusSpan.innerHTML = "✓";
+    statusSpan.classList.remove("seen");
+  }
+}
+
+// Listen for message read status changes
+function setupMessageStatusListener() {
+  onSnapshot(collection(db, "messages"), function(snapshot) {
+    snapshot.docChanges().forEach(function(change) {
+      if (change.type === "modified") {
+        const msg = change.doc.data();
+        msg.id = change.doc.id;
+        
+        if (msg.senderId === currentUser?.uid && msg.receiverId === contactId) {
+          updateMessageStatus(msg.id, msg.read === true);
+        }
+      }
+    });
+  });
+}
+
+// =====================
+// MESSAGE SEARCH
+// =====================
+
+let searchMode = false;
+let allMessages = [];
+
+function showSearchUI() {
+  // Create search bar
+  const searchBar = document.createElement("div");
+  searchBar.id = "search-bar";
+  searchBar.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+    z-index: 9999;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  `;
+
+  searchBar.innerHTML = `
+    <button id="close-search" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; width: 40px; height: 40px; border-radius: 12px;">←</button>
+    <div style="flex:1; display:flex; align-items:center; gap:10px; background: rgba(102,126,234,0.08); border: 1px solid rgba(102,126,234,0.18); border-radius: 14px; padding: 8px 12px;">
+      <i class="ri-search-line" style="color:#667eea; font-size: 18px;"></i>
+      <input type="text" id="search-input" placeholder="Search messages…" style="flex:1; padding: 0; border: none; outline: none; background: transparent; font-size: 14px;">
+      <button id="clear-search" style="background:none;border:none;cursor:pointer; font-size: 14px; color:#667eea; width: 28px; height: 28px; border-radius: 10px;">✕</button>
+    </div>
+    <button id="prev-result" style="background:none;border:none;font-size:1.2rem;cursor:pointer;width:40px;height:40px;border-radius:12px;">↑</button>
+    <button id="next-result" style="background:none;border:none;font-size:1.2rem;cursor:pointer;width:40px;height:40px;border-radius:12px;">↓</button>
+    <span id="search-count" style="font-size:12px;color:#667eea; font-weight:600; min-width: 72px; text-align:right;"></span>
+  `;
+
+  document.body.appendChild(searchBar);
+
+  // Adjust chat header
+  chatHeader.style.marginTop = "56px";
+
+  // Load scoped messages only once per open (performance)
+  loadAllMessages();
+
+  // Focus input
+  const inputEl = document.getElementById("search-input");
+  inputEl && inputEl.focus();
+
+  let debounceTimer = null;
+  document.getElementById("search-input").addEventListener("input", function(e) {
+    const q = e.target.value;
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchMessages(q);
+    }, 120);
+  });
+
+  document.getElementById("clear-search").addEventListener("click", () => {
+    const input = document.getElementById("search-input");
+    if (!input) return;
+    input.value = "";
+    searchMessages("");
+    input.focus();
+  });
+
+  // Close search
+  document.getElementById("close-search").addEventListener("click", closeSearch);
+
+  // Navigate results
+  document.getElementById("prev-result").addEventListener("click", () => navigateSearch(-1));
+  document.getElementById("next-result").addEventListener("click", () => navigateSearch(1));
+}
+
+
+function loadAllMessages() {
+  getDocs(collection(db, "messages")).then(snapshot => {
+    allMessages = [];
+    snapshot.forEach(doc => {
+      const msg = doc.data();
+      msg.id = doc.id;
+      
+      // Check if message is between current user and contact
+      const isFromContact = msg.senderId === contactId;
+      const isToContact = msg.receiverId === contactId;
+      const isFromUser = msg.senderId === currentUser?.uid;
+      const isToUser = msg.receiverId === currentUser?.uid;
+      
+      if ((isFromContact && isToUser) || (isFromUser && isToContact)) {
+        allMessages.push(msg);
+      }
+    });
+    
+    // Sort by timestamp
+    allMessages.sort((a, b) => {
+      const timeA = a.timestamp ? (a.timestamp.toDate ? a.timestamp.toDate().getTime() : new Date(a.timestamp).getTime()) : 0;
+      const timeB = b.timestamp ? (b.timestamp.toDate ? b.timestamp.toDate().getTime() : new Date(b.timestamp).getTime()) : 0;
+      return timeA - timeB;
+    });
+  });
+}
+
+let searchResults = [];
+let currentSearchIndex = -1;
+
+function searchMessages(query) {
+  if (!query.trim()) {
+    document.getElementById("search-count").textContent = "";
+    clearHighlights();
+    return;
+  }
+  
+  query = query.toLowerCase();
+  searchResults = [];
+  
+  allMessages.forEach(msg => {
+    if (msg.type === "text" && msg.text && msg.text.toLowerCase().includes(query)) {
+      searchResults.push(msg.id);
+    }
+  });
+  
+  currentSearchIndex = searchResults.length > 0 ? 0 : -1;
+  
+  // Update count
+  const countSpan = document.getElementById("search-count");
+  if (searchResults.length > 0) {
+    countSpan.textContent = `1/${searchResults.length}`;
+    highlightResult(searchResults[0]);
+  } else {
+    countSpan.textContent = "No results";
+    clearHighlights();
+  }
+}
+
+function highlightResult(msgId) {
+  clearHighlights();
+  
+  const msgDiv = document.querySelector(`[data-id="${msgId}"]`);
+  if (msgDiv) {
+    msgDiv.style.background = "#fff3cd";
+    msgDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll("#chat-messages > div").forEach(div => {
+    div.style.background = "";
+  });
+}
+
+function navigateSearch(direction) {
+  if (searchResults.length === 0) return;
+  
+  currentSearchIndex += direction;
+  
+  if (currentSearchIndex < 0) currentSearchIndex = searchResults.length - 1;
+  if (currentSearchIndex >= searchResults.length) currentSearchIndex = 0;
+  
+  document.getElementById("search-count").textContent = `${currentSearchIndex + 1}/${searchResults.length}`;
+  highlightResult(searchResults[currentSearchIndex]);
+}
+
+function closeSearch() {
+  const searchBar = document.getElementById("search-bar");
+  if (searchBar) {
+    searchBar.remove();
+    chatHeader.style.marginTop = "";
+    clearHighlights();
+  }
+}
+
+// Search button listener
+document.getElementById("search-btn").addEventListener("click", showSearchUI);
+
+// =====================
+// INIT
+// =====================
+
+// =====================
+// GROUP CHAT SUPPORT
+// =====================
+let currentGroupData = null;
+let isGroupAdmin = false;
+
+async function loadGroupInfo() {
+  if (!isGroupChat || !groupId) return;
+  
+  try {
+    const groupDoc = await getDoc(doc(db, "groups", groupId));
+    if (groupDoc.exists()) {
+      currentGroupData = groupDoc.data();
+      
+      // Check if current user is admin
+      isGroupAdmin = currentGroupData.adminIds && currentGroupData.adminIds.includes(currentUser.uid);
+      
+      // Show group info button
+      document.getElementById("group-info-btn").style.display = "block";
+      
+      // Update header with group info
+      document.getElementById("contact-name").textContent = currentGroupData.groupName || "Group";
+      document.getElementById("contact-image").src = currentGroupData.groupImageUrl || "images/default-profile.png";
+      
+      // Update typing indicator to show member count
+      const memberCount = currentGroupData.memberIds ? currentGroupData.memberIds.length : 0;
+      document.getElementById("typing-text").textContent = memberCount + " participants";
+    }
+  } catch (error) {
+    console.error("Error loading group info:", error);
+  }
+}
+
+// Group info button handler
+document.getElementById("group-info-btn").addEventListener("click", function() {
+  showGroupInfoModal();
+});
+
+// =====================
+// SENDER INFO PANEL (for group messages)
+// =====================
+
+let senderInfoPanel = null;
+let panelOverlay = null;
+
+async function showSenderInfoPanel(senderId, senderName, senderImage) {
+  // Remove existing panel
+  if (senderInfoPanel) {
+    closeSenderInfoPanel();
+  }
+  
+  // Create overlay
+  panelOverlay = document.createElement("div");
+  panelOverlay.id = "panel-overlay";
+  document.body.appendChild(panelOverlay);
+  
+  // Get sender's full details from Firestore
+  let senderData = null;
+  try {
+    const senderDoc = await getDoc(doc(db, "users", senderId));
+    if (senderDoc.exists()) {
+      senderData = senderDoc.data();
+    }
+  } catch (error) {
+    console.error("Error loading sender data:", error);
+  }
+  
+  // Check if sender is in current user's contacts
+  let userContacts = [];
+  try {
+    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    if (userDoc.exists()) {
+      userContacts = userDoc.data().contacts || [];
+    }
+  } catch (error) {
+    console.error("Error loading contacts:", error);
+  }
+  
+  const isInContacts = userContacts.includes(senderId);
+  
+  // Get additional details
+  const displayImage = senderData?.profileImageUrl || senderImage || "images/default-profile.png";
+  const displayName = senderData?.firstName ? `${senderData.firstName} ${senderData.lastName || ''}` : (senderName || "Unknown");
+  const mobileNumber = senderData?.mobileNumber || "Not available";
+  const email = senderData?.email || "Not available";
+  const about = senderData?.about || "Hey there! I'm using this chat app";
+  const isOnline = senderData?.isOnline || false;
+  const lastSeen = senderData?.lastSeen ? formatLastSeen(senderData.lastSeen) : "Long time ago";
+  
+  // Create enhanced slide-up panel
+  senderInfoPanel = document.createElement("div");
+  senderInfoPanel.id = "sender-info-panel";
+  senderInfoPanel.className = "show";
+  
+  senderInfoPanel.innerHTML = `
+    <div class="panel-handle"></div>
+    <div class="sender-panel-header">
+      <h3>Contact Info</h3>
+      <button class="sender-panel-close" id="close-sender-panel">&times;</button>
+    </div>
+    <div class="sender-profile-section">
+      <img src="${displayImage}" class="sender-profile-image" alt="${displayName}">
+      <h2 class="sender-name">${displayName}</h2>
+      <p class="sender-status ${isOnline ? '' : 'offline'}">
+        <span class="status-dot"></span>
+        ${isOnline ? 'Online' : 'Last seen ' + lastSeen}
+      </p>
+    </div>
+    <div class="sender-details">
+      <div class="detail-item">
+        <i class="ri-phone-line"></i>
+        <div>
+          <div class="detail-label">Mobile</div>
+          <div class="detail-value">${mobileNumber}</div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <i class="ri-mail-line"></i>
+        <div>
+          <div class="detail-label">Email</div>
+          <div class="detail-value">${email}</div>
+        </div>
+      </div>
+      <div class="detail-item">
+        <i class="ri-chat-3-line"></i>
+        <div>
+          <div class="detail-label">About</div>
+          <div class="detail-value">${about}</div>
+        </div>
+      </div>
+    </div>
+    <div class="sender-actions">
+      ${isInContacts 
+        ? `<button class="sender-action-btn primary" id="message-sender-btn">
+            <i class="ri-message-3-line"></i> Message
+          </button>
+          <button class="sender-action-btn secondary" id="view-profile-btn">
+            <i class="ri-user-line"></i> View Profile
+          </button>`
+        : `<button class="sender-action-btn primary" id="add-to-contacts-btn">
+            <i class="ri-user-add-line"></i> Add to Contacts
+          </button>
+          <button class="sender-action-btn secondary" id="block-sender-btn">
+            <i class="ri-forbid-line"></i> Block
+          </button>`
+      }
+    </div>
+    <div class="sender-quick-actions">
+      <div class="quick-action-item" id="start-call-btn">
+        <i class="ri-phone-line"></i>
+        <span>Call</span>
+      </div>
+      <div class="quick-action-item" id="video-call-btn">
+        <i class="ri-video-line"></i>
+        <span>Video</span>
+      </div>
+      <div class="quick-action-item" id="share-contact-btn">
+        <i class="ri-share-line"></i>
+        <span>Share</span>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(senderInfoPanel);
+  
+  // Animate overlay
+  setTimeout(() => {
+    panelOverlay.classList.add("show");
+  }, 10);
+  
+  // Close panel handlers
+  document.getElementById("close-sender-panel").addEventListener("click", closeSenderInfoPanel);
+  panelOverlay.addEventListener("click", closeSenderInfoPanel);
+  document.querySelector(".panel-handle").addEventListener("click", closeSenderInfoPanel);
+  
+  // Add to contacts button
+  const addBtn = document.getElementById("add-to-contacts-btn");
+  if (addBtn) {
+    addBtn.addEventListener("click", async () => {
+      try {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          contacts: arrayUnion(senderId)
+        });
+        
+        // Show success feedback
+        addBtn.innerHTML = '<i class="ri-check-line"></i> Added!';
+        addBtn.style.background = '#22c55e';
+        
+        setTimeout(() => {
+          closeSenderInfoPanel();
+          // Refresh to show updated state
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        console.error("Error adding contact:", error);
+        alert("Error adding contact");
+      }
+    });
+  }
+  
+  // Message button
+  const msgBtn = document.getElementById("message-sender-btn");
+  if (msgBtn) {
+    msgBtn.addEventListener("click", () => {
+      closeSenderInfoPanel();
+      window.location.href = `chatting.html?contactId=${senderId}`;
+    });
+  }
+  
+  // View profile button
+  const viewProfileBtn = document.getElementById("view-profile-btn");
+  if (viewProfileBtn) {
+    viewProfileBtn.addEventListener("click", () => {
+      closeSenderInfoPanel();
+      window.location.href = `contact-info.html?contactId=${senderId}`;
+    });
+  }
+  
+  // Block sender button
+  const blockBtn = document.getElementById("block-sender-btn");
+  if (blockBtn) {
+    blockBtn.addEventListener("click", async () => {
+      const confirmBlock = confirm("Block this user?");
+      if (confirmBlock) {
+        try {
+          await updateDoc(doc(db, "users", currentUser.uid), {
+            blockedUsers: arrayUnion(senderId)
+          });
+          alert("User blocked!");
+          closeSenderInfoPanel();
+        } catch (error) {
+          console.error("Error blocking user:", error);
+        }
+      }
+    });
+  }
+  
+  // Quick action: Start call
+  const callBtn = document.getElementById("start-call-btn");
+  if (callBtn) {
+    callBtn.addEventListener("click", () => {
+      closeSenderInfoPanel();
+      window.location.href = `calling.html?contactId=${senderId}`;
+    });
+  }
+  
+  // Quick action: Video call
+  const videoBtn = document.getElementById("video-call-btn");
+  if (videoBtn) {
+    videoBtn.addEventListener("click", () => {
+      alert("Video call feature coming soon!");
+    });
+  }
+  
+  // Quick action: Share contact
+  const shareBtn = document.getElementById("share-contact-btn");
+  if (shareBtn) {
+    shareBtn.addEventListener("click", () => {
+      const shareData = {
+        name: displayName,
+        phone: mobileNumber
+      };
+      navigator.clipboard.writeText(JSON.stringify(shareData)).then(() => {
+        alert("Contact info copied to clipboard!");
+      });
+    });
+  }
+}
+
+function formatLastSeen(timestamp) {
+  if (!timestamp) return "unknown";
+  
+  let date;
+  if (timestamp.toDate) {
+    date = timestamp.toDate();
+  } else {
+    date = new Date(timestamp);
+  }
+  
+  const now = new Date();
+  const diff = now - date;
+  
+  // If less than 1 minute
+  if (diff < 60000) {
+    return "just now";
+  }
+  
+  // If less than 1 hour
+  if (diff < 3600000) {
+    const mins = Math.floor(diff / 60000);
+    return mins + " minute" + (mins > 1 ? "s" : "") + " ago";
+  }
+  
+  // If less than 24 hours
+  if (diff < 86400000) {
+    const hours = Math.floor(diff / 3600000);
+    return hours + " hour" + (hours > 1 ? "s" : "") + " ago";
+  }
+  
+  // If less than 7 days
+  if (diff < 604800000) {
+    const days = Math.floor(diff / 86400000);
+    return days + " day" + (days > 1 ? "s" : "") + " ago";
+  }
+  
+  // Otherwise show date
+  return date.toLocaleDateString();
+}
+
+function closeSenderInfoPanel() {
+  if (senderInfoPanel) {
+    senderInfoPanel.classList.remove("show");
+    if (panelOverlay) {
+      panelOverlay.classList.remove("show");
+    }
+    setTimeout(() => {
+      if (senderInfoPanel) {
+        senderInfoPanel.remove();
+        senderInfoPanel = null;
+      }
+      if (panelOverlay) {
+        panelOverlay.remove();
+        panelOverlay = null;
+      }
+    }, 300);
+  }
+}
+
+// Show group info modal with edit option for admins
+function showGroupInfoModal() {
+  if (!currentGroupData) return;
+  
+  const modal = document.createElement("div");
+  modal.id = "group-info-modal";
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  `;
+  
+  const memberCount = currentGroupData.memberIds ? currentGroupData.memberIds.length : 0;
+  const isAdmin = isGroupAdmin;
+  
+  modal.innerHTML = `
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 400px; max-height: 80vh; overflow: auto;">
+      <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Group Info</h3>
+        <button id="close-group-modal" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+      </div>
+      <div style="padding: 20px; text-align: center;">
+        <img src="${currentGroupData.groupImageUrl || 'images/default-profile.png'}" style="width: 100px; height: 100px; border-radius: 50%;">
+        <h2 style="margin: 15px 0 5px;">${currentGroupData.groupName}</h2>
+        <p style="color: #666;">${memberCount} participants</p>
+        ${isAdmin ? '<button id="edit-group-btn" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; margin-top: 10px;">Edit Group</button>' : ''}
+      </div>
+      <div style="padding: 20px; border-top: 1px solid #eee;">
+        <h4>Participants</h4>
+        <div id="group-members-list"></div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Close modal
+  document.getElementById("close-group-modal").addEventListener("click", () => modal.remove());
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
+  
+  // Edit group button (admin only)
+  const editBtn = document.getElementById("edit-group-btn");
+  if (editBtn) {
+    editBtn.addEventListener("click", () => showEditGroupModal());
+  }
+  
+  // Load group members
+  loadGroupMembers();
+}
+
+async function loadGroupMembers() {
+  if (!currentGroupData || !currentGroupData.memberIds) return;
+  
+  const membersList = document.getElementById("group-members-list");
+  if (!membersList) return;
+  
+  membersList.innerHTML = "";
+  
+  for (const memberId of currentGroupData.memberIds) {
+    try {
+      const memberDoc = await getDoc(doc(db, "users", memberId));
+      if (memberDoc.exists()) {
+        const memberData = memberDoc.data();
+        const isAdmin = currentGroupData.adminIds && currentGroupData.adminIds.includes(memberId);
+        
+        const memberDiv = document.createElement("div");
+        memberDiv.style.cssText = "display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px;";
+        memberDiv.innerHTML = `
+          <img src="${memberData.profileImageUrl || 'images/default-profile.png'}" style="width: 40px; height: 40px; border-radius: 50%;">
+          <div style="flex: 1;">
+            <div style="font-weight: 500;">${memberData.firstName} ${memberData.lastName}</div>
+            <div style="font-size: 12px; color: #666;">${isAdmin ? 'Admin' : 'Member'}</div>
+          </div>
+        `;
+        membersList.appendChild(memberDiv);
+      }
+    } catch (error) {
+      console.error("Error loading member:", error);
+    }
+  }
+}
+
+function showEditGroupModal() {
+  if (!isGroupAdmin) return;
+  
+  const modal = document.createElement("div");
+  modal.id = "edit-group-modal";
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2001;
+  `;
+  
+  modal.innerHTML = `
+    <div style="background: white; border-radius: 16px; width: 90%; max-width: 400px; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h3 style="margin: 0;">Edit Group</h3>
+        <button id="close-edit-modal" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+      </div>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div id="edit-group-image-container" style="position: relative; width: 100px; height: 100px; margin: 0 auto; cursor: pointer; border-radius: 50%; overflow: hidden; border: 3px solid #667eea;">
+          <img id="edit-group-preview-image" src="${currentGroupData.groupImageUrl || 'images/default-profile.png'}" style="width: 100%; height: 100%; object-fit: cover;">
+          <div id="edit-image-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;">
+            <i class="ri-camera-fill" style="font-size: 24px; color: white;"></i>
+          </div>
+        </div>
+        <span style="display: block; margin-top: 8px; font-size: 12px; color: #666;">Tap to change group photo</span>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Group Name</label>
+        <input type="text" id="edit-group-name" value="${currentGroupData.groupName || ''}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+      </div>
+      <button id="save-group-btn" style="width: 100%; background: #667eea; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; cursor: pointer;">Save Changes</button>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Create hidden file input for group image
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.id = "edit-group-image-input";
+  fileInput.accept = "image/*";
+  fileInput.style.display = "none";
+  document.body.appendChild(fileInput);
+  
+  // Close modal
+  document.getElementById("close-edit-modal").addEventListener("click", () => { modal.remove(); fileInput.remove(); });
+  modal.addEventListener("click", (e) => { if (e.target === modal) { modal.remove(); fileInput.remove(); } });
+  
+  // Image hover effect and click handling
+  let selectedEditImage = null;
+  const imageContainer = document.getElementById("edit-group-image-container");
+  const imageOverlay = document.getElementById("edit-image-overlay");
+  
+  if (imageContainer && imageOverlay) {
+    imageContainer.addEventListener("mouseenter", () => { imageOverlay.style.opacity = "1"; });
+    imageContainer.addEventListener("mouseleave", () => { imageOverlay.style.opacity = "0"; });
+    imageContainer.addEventListener("click", () => { fileInput.click(); });
+    
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        selectedEditImage = file;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById("edit-group-preview-image").src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+  
+  // Save changes
+  document.getElementById("save-group-btn").addEventListener("click", async () => {
+    const newName = document.getElementById("edit-group-name").value.trim();
+    if (!newName) {
+      alert("Please enter a group name");
+      return;
+    }
+    
+    const saveBtn = document.getElementById("save-group-btn");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+    
+    try {
+      const updateData = { groupName: newName };
+      
+      // Upload new image if selected
+      if (selectedEditImage) {
+        try {
+          const storageRef = ref(storage, "group_images/" + groupId + "_" + Date.now());
+          const snapshot = await uploadBytes(storageRef, selectedEditImage);
+          const downloadURL = await getDownloadURL(snapshot.ref);
+          updateData.groupImageUrl = downloadURL;
+        } catch (imageError) {
+          console.error("Error uploading group image:", imageError);
+        }
+      }
+      
+      await updateDoc(doc(db, "groups", groupId), updateData);
+      
+      alert("Group updated!");
+      modal.remove();
+      fileInput.remove();
+      
+      // Update current group data
+      currentGroupData.groupName = newName;
+      if (updateData.groupImageUrl) {
+        currentGroupData.groupImageUrl = updateData.groupImageUrl;
+        document.getElementById("contact-image").src = updateData.groupImageUrl;
+      }
+      document.getElementById("contact-name").textContent = newName;
+      
+      // Reload to show updated info
+      window.location.reload();
+      
+    } catch (error) {
+      console.error("Error updating group:", error);
+      alert("Error updating group: " + error.message);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save Changes";
+    }
+  });
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    if (typeof initIncomingCallPopup === 'function') initIncomingCallPopup();
+    currentUser = user;
+    console.log("User:", user.uid);
+    
+    try {
+      // Check if this is a group chat
+      if (isGroupChat) {
+        await loadGroupInfo();
+      } else {
+        const contactDoc = await getDoc(doc(db, "users", contactId));
+        if (contactDoc.exists()) {
+          const contactData = contactDoc.data();
+          document.getElementById("contact-name").textContent = contactData.firstName + " " + contactData.lastName;
+          document.getElementById("contact-image").src = contactData.profileImageUrl || "images/default-profile.png";
+        }
+      }
+      
+      await loadMessages();
+      setupRealtime();
+      setupTypingListener();
+      setupMessageStatusListener();
+      
+    } catch (error) {
+      console.error("Init error:", error);
+    }
+  } else {
+    window.location.href = "auth.html";
+  }
+});
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

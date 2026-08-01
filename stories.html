@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stories</title>
+  <link rel="stylesheet" href="CSS/stories.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0b1220">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+  <header>
+    <div class="stories-header">
+      <h2>Stories</h2>
+    </div>
+  </header>
+
+  <main>
+    <!-- My Story Section -->
+    <div class="my-story-section">
+      <div class="my-story-circle" id="my-story-circle">
+        <img id="my-story-img" src="images/default-profile.png" alt="My Story">
+        <div class="add-story-icon">+</div>
+      </div>
+      <div class="my-story-info">
+        <h3>My Story</h3>
+        <p id="my-story-count">0 updates</p>
+      </div>
+      <!-- Add Story Button -->
+      <button id="add-new-story-btn" class="add-new-story-btn">
+        <i class="ri-add-line"></i> Add Story
+      </button>
+    </div>
+
+    <!-- Highlights Section -->
+    <div class="highlights-section" id="highlights-section">
+      <h3>Highlights</h3>
+      <div class="highlights-container" id="highlights-list">
+        <div class="add-highlight-btn" id="add-highlight-btn">
+          <div class="highlight-circle">
+            <i class="ri-add-line"></i>
+          </div>
+          <span>New</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Updates -->
+    <div class="updates-section">
+      <h3>Recent Updates</h3>
+      <div id="stories-list"></div>
+    </div>
+
+    <!-- Viewed Updates -->
+    <div class="viewed-section" id="viewed-section" style="display: none;">
+      <h3>Viewed</h3>
+      <div id="viewed-stories-list"></div>
+    </div>
+  </main>
+
+  <!-- Add Story Modal -->
+  <div id="story-modal" class="story-modal">
+    <div class="story-modal-content">
+      <div class="story-modal-header">
+        <h3>Add to Story</h3>
+        <button id="close-story-modal"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="story-input-section">
+        <div class="text-style-toolbar">
+          <button class="style-btn" data-style="bold" title="Bold"><i class="ri-bold"></i></button>
+          <button class="style-btn" data-style="italic" title="Italic"><i class="ri-italic"></i></button>
+          <button class="style-btn" data-style="underline" title="Underline"><i class="ri-underline"></i></button>
+          <input type="color" id="text-color-picker" class="color-picker" title="Text Color" value="#ffffff">
+        </div>
+        <textarea id="story-text" placeholder="What's on your mind?" rows="4"></textarea>
+        <div class="text-preview" id="text-preview"></div>
+      </div>
+      <div class="story-modal-footer">
+        <button id="share-story-btn" disabled>Share</button>
+      </div>
+      <div class="story-preview" id="story-preview" style="display: none;">
+        <img id="story-image-preview" src="" alt="Preview">
+        <video id="story-video-preview" controls style="display: none;"></video>
+      </div>
+      <div class="story-options">
+        <button id="add-image-btn"><i class="ri-image-line"></i> Image</button>
+        <button id="add-video-btn"><i class="ri-video-line"></i> Video</button>
+        <input type="file" id="story-image-input" accept="image/*" style="display: none;">
+        <input type="file" id="story-video-input" accept="video/*" style="display: none;">
+      </div>
+      <div class="story-privacy-section">
+        <label><i class="ri-shield-line"></i> Privacy:</label>
+        <select id="story-privacy-select">
+          <option value="public">Public</option>
+          <option value="contacts">Contacts Only</option>
+          <option value="private">Private</option>
+        </select>
+      </div>
+      <!-- <div class="story-modal-footer">
+        <button id="share-story-btn" disabled>Share</button>
+      </div> -->
+    </div>
+  </div>
+
+  <!-- Story Viewer Modal -->
+  <div id="story-viewer" class="story-viewer">
+    <div class="story-viewer-content">
+      <!-- Progress Bar Container -->
+      <div class="story-progress-container" id="story-progress-container"></div>
+      
+      <div class="story-viewer-header">
+        <div class="story-viewer-user">
+          <img id="viewer-user-img" src="" alt="User">
+          <div>
+            <h4 id="viewer-user-name">User</h4>
+            <span id="viewer-story-time">Just now</span>
+            <span id="viewer-story-privacy" class="privacy-badge" style="display: none;"></span>
+          </div>
+        </div>
+        <div class="story-viewer-actions">
+          <button id="more-story-options" title="More options"><i class="ri-more-fill"></i></button>
+          <button id="close-story-viewer"><i class="ri-close-line"></i></button>
+        </div>
+      </div>
+      
+      <!-- Navigation Zones -->
+      <div class="story-nav-zone story-nav-zone-left" id="story-nav-prev"></div>
+      <div class="story-nav-zone story-nav-zone-right" id="story-nav-next"></div>
+      
+      <div class="story-viewer-body">
+        <img id="viewer-story-img" src="" alt="Story">
+        <video id="viewer-story-video" controls style="display: none;"></video>
+        <div id="viewer-story-text" class="viewer-text"></div>
+      </div>
+      
+      <!-- Reactions Bar -->
+      <div class="story-reactions-bar" id="story-reactions-bar">
+        <div class="reaction-buttons">
+          <button class="reaction-btn" data-reaction="❤️">❤️</button>
+          <button class="reaction-btn" data-reaction="😍">😍</button>
+          <button class="reaction-btn" data-reaction="😂">😂</button>
+          <button class="reaction-btn" data-reaction="😮">😮</button>
+          <button class="reaction-btn" data-reaction="😢">😢</button>
+          <button class="reaction-btn" data-reaction="👏">👏</button>
+        </div>
+        <div class="current-reaction" id="current-reaction"></div>
+      </div>
+      
+      <div class="story-viewer-footer">
+        <input type="text" id="story-reply-input" placeholder="Reply...">
+        <button id="send-story-reply"><i class="ri-send-plane-fill"></i></button>
+      </div>
+      <div class="story-views-section" id="story-views-section" style="display: none;">
+        <button id="view-views-btn" class="view-views-btn">
+          <i class="ri-eye-line"></i> <span id="views-count">0</span> views
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Story Options Menu -->
+  <div id="story-options-menu" class="story-options-menu" style="display: none;">
+    <button id="delete-story-btn"><i class="ri-delete-bin-line"></i> Delete Story</button>
+    <button id="save-to-highlight-btn"><i class="ri-bookmark-line"></i> Save to Highlights</button>
+    <button id="privacy-settings-btn"><i class="ri-shield-line"></i> Privacy Settings</button>
+  </div>
+
+  <!-- Views List Slide Up Panel -->
+  <div id="views-list-panel" class="views-list-panel">
+    <div class="views-list-header">
+      <h3>Views</h3>
+      <button id="close-views-panel"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="views-tabs">
+      <button class="views-tab active" data-tab="views">Views</button>
+      <button class="views-tab" data-tab="reactions">Reactions</button>
+    </div>
+    <div id="views-list-content" class="views-list-content"></div>
+  </div>
+
+  <!-- Privacy Settings Modal -->
+  <div id="privacy-modal" class="privacy-modal">
+    <div class="privacy-modal-content">
+      <div class="privacy-modal-header">
+        <h3>Story Privacy Settings</h3>
+        <button id="close-privacy-modal"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="privacy-options">
+        <div class="privacy-option">
+          <label>
+            <input type="radio" name="default-privacy" value="public" checked>
+            <div class="privacy-option-content">
+              <i class="ri-global-line"></i>
+              <div>
+                <h4>Public</h4>
+                <p>Everyone can see your stories</p>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="privacy-option">
+          <label>
+            <input type="radio" name="default-privacy" value="contacts">
+            <div class="privacy-option-content">
+              <i class="ri-group-line"></i>
+              <div>
+                <h4>Contacts Only</h4>
+                <p>Only your contacts can see your stories</p>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div class="privacy-option">
+          <label>
+            <input type="radio" name="default-privacy" value="private">
+            <div class="privacy-option-content">
+              <i class="ri-lock-line"></i>
+              <div>
+                <h4>Private</h4>
+                <p>Only you can see your stories</p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+      <div class="privacy-modal-footer">
+        <button id="save-privacy-btn">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Highlight Creation Modal -->
+  <div id="highlight-modal" class="highlight-modal">
+    <div class="highlight-modal-content">
+      <div class="highlight-modal-header">
+        <h3>Create Highlight</h3>
+        <button id="close-highlight-modal"><i class="ri-close-line"></i></button>
+      </div>
+      <div class="highlight-stories-list" id="highlight-stories-list"></div>
+      <div class="highlight-name-input">
+        <input type="text" id="highlight-name" placeholder="Highlight name">
+      </div>
+      <div class="highlight-modal-footer">
+        <button id="save-highlight-btn-final">Save Highlight</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Bottom Navigation -->
+  <nav class="nav-links-2 floating">
+    <a href="chats.html"><button><i class="ri-chat-3-line"></i><span>Chats</span></button></a>
+    <a href="calls.html"><button><i class="ri-phone-line"></i><span>Calls</span></button></a>
+    <a href="stories.html"><button class="active"><i class="ri-meteor-line"></i><span>Stories</span></button></a>
+    <a href="contacts.html"><button><i class="ri-group-line"></i><span>Contacts</span></button></a>
+
+    <a href="settings.html"><button><i class="ri-settings-5-line"></i><span>Settings</span></button></a>
+  </nav>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, updateDoc, onSnapshot, serverTimestamp, getDocs, arrayUnion, arrayRemove, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX74wlrm96EE9zO7QQYSI21xGp_eO40IE",
+      authDomain: "posts-c532d.firebaseapp.com",
+      projectId: "posts-c532d",
+      storageBucket: "posts-c532d.appspot.com",
+      messagingSenderId: "742123859279",
+      appId: "1:742123859279:web:13ba1af7ac53774a1e693a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUser = null;
+
+    // DOM Elements
+    const storiesList = document.getElementById("stories-list");
+    const viewedStoriesList = document.getElementById("viewed-stories-list");
+    const storyModal = document.getElementById("story-modal");
+    const storyViewer = document.getElementById("story-viewer");
+    const storyText = document.getElementById("story-text");
+    const shareStoryBtn = document.getElementById("share-story-btn");
+    const storyImageInput = document.getElementById("story-image-input");
+    const storyVideoInput = document.getElementById("story-video-input");
+    const storyImagePreview = document.getElementById("story-image-preview");
+    const storyVideoPreview = document.getElementById("story-video-preview");
+    const storyPreview = document.getElementById("story-preview");
+
+    // Store my stories for viewing
+    let myStoriesData = [];
+    
+    // Store all stories for navigation
+    let allViewableStories = [];
+    let currentStoryIndex = 0;
+    let currentViewingStory = null;
+    
+    // Progress bar variables
+    let progressInterval = null;
+    let progressValue = 0;
+    const STORY_DURATION = 5000;
+    const PROGRESS_INTERVAL = 50;
+
+    // Pause handling (tap-and-hold)
+    let isStoryPaused = false;
+    let pauseAtProgressValue = 0;
+    let holdPauseActive = false;
+
+    
+    // User's contacts
+    let userContacts = [];
+
+    // Text styles
+    let textStyles = {
+      bold: false,
+      italic: false,
+      underline: false,
+      color: '#ffffff'
+    };
+
+    // Open story modal OR view my story
+    document.getElementById("my-story-circle").addEventListener("click", async () => {
+      await loadStories();
+      
+      if (myStoriesData.length > 0) {
+        viewStory(myStoriesData[0]);
+      } else {
+        storyModal.style.display = "flex";
+      }
+    });
+
+    // Add new story button
+    document.getElementById("add-new-story-btn").addEventListener("click", async () => {
+      clearStoryForm();
+      storyModal.style.display = "flex";
+    });
+
+    // Close story modal
+    document.getElementById("close-story-modal").addEventListener("click", () => {
+      storyModal.style.display = "none";
+      clearStoryForm();
+    });
+
+    // Close story viewer
+    document.getElementById("close-story-viewer").addEventListener("click", () => {
+      storyViewer.style.display = "none";
+      stopProgressBar();
+    });
+
+    // Image upload
+    document.getElementById("add-image-btn").addEventListener("click", () => {
+      storyImageInput.click();
+    });
+
+    // Video upload
+    document.getElementById("add-video-btn").addEventListener("click", () => {
+      storyVideoInput.click();
+    });
+
+    storyImageInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          storyImagePreview.src = e.target.result;
+          storyImagePreview.style.display = "block";
+          storyVideoPreview.style.display = "none";
+          storyPreview.style.display = "block";
+          shareStoryBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    storyVideoInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          storyVideoPreview.src = e.target.result;
+          storyVideoPreview.style.display = "block";
+          storyImagePreview.style.display = "none";
+          storyPreview.style.display = "block";
+          shareStoryBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Text style buttons
+    document.querySelectorAll('.style-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const style = btn.dataset.style;
+        textStyles[style] = !textStyles[style];
+        btn.classList.toggle('active', textStyles[style]);
+        updateTextPreview();
+      });
+    });
+
+    document.getElementById('text-color-picker').addEventListener('input', (e) => {
+      textStyles.color = e.target.value;
+      updateTextPreview();
+    });
+
+    function updateTextPreview() {
+      const preview = document.getElementById('text-preview');
+      let style = `color: ${textStyles.color};`;
+      if (textStyles.bold) style += 'font-weight: bold;';
+      if (textStyles.italic) style += 'font-style: italic;';
+      if (textStyles.underline) style += 'text-decoration: underline;';
+      preview.style = style;
+      preview.textContent = storyText.value || 'Preview text';
+    }
+
+    storyText.addEventListener('input', updateTextPreview);
+
+    // Enable share button when text is entered
+    storyText.addEventListener("input", () => {
+      shareStoryBtn.disabled = storyText.value.trim() === "" && !storyImageInput.files[0] && !storyVideoInput.files[0];
+    });
+
+    // Clear form
+    function clearStoryForm() {
+      storyText.value = "";
+      storyImageInput.value = "";
+      storyVideoInput.value = "";
+      storyPreview.style.display = "none";
+      storyImagePreview.style.display = "none";
+      storyVideoPreview.style.display = "none";
+      shareStoryBtn.disabled = true;
+      textStyles = { bold: false, italic: false, underline: false, color: '#ffffff' };
+      document.querySelectorAll('.style-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('text-color-picker').value = '#ffffff';
+      updateTextPreview();
+    }
+
+    // Share story
+    shareStoryBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+
+      const text = storyText.value.trim();
+      const imageFile = storyImageInput.files[0];
+      const videoFile = storyVideoInput.files[0];
+      const privacy = document.getElementById("story-privacy-select").value;
+      
+      try {
+        let imageUrl = null;
+        let videoUrl = null;
+        let mediaType = null;
+
+        if (imageFile) {
+          const storageRef = ref(storage, "stories/" + currentUser.uid + "/" + Date.now() + "_" + imageFile.name);
+          const snapshot = await uploadBytes(storageRef, imageFile);
+          imageUrl = await getDownloadURL(snapshot.ref);
+          mediaType = 'image';
+        }
+
+        if (videoFile) {
+          const storageRef = ref(storage, "stories/" + currentUser.uid + "/" + Date.now() + "_" + videoFile.name);
+          const snapshot = await uploadBytes(storageRef, videoFile);
+          videoUrl = await getDownloadURL(snapshot.ref);
+          mediaType = 'video';
+        }
+
+        // Calculate expiry time (24 hours from now)
+        const expiryTime = Date.now() + (24 * 60 * 60 * 1000);
+
+        // Create styled text if any style is applied
+        let styledText = null;
+        if (text || textStyles.bold || textStyles.italic || textStyles.underline) {
+          styledText = {
+            text: text,
+            bold: textStyles.bold,
+            italic: textStyles.italic,
+            underline: textStyles.underline,
+            color: textStyles.color
+          };
+        }
+
+        await addDoc(collection(db, "stories"), {
+          userId: currentUser.uid,
+          userName: currentUser.firstName + " " + currentUser.lastName,
+          userImage: currentUser.profileImageUrl || "images/default-profile.png",
+          text: text,
+          styledText: styledText,
+          imageUrl: imageUrl,
+          videoUrl: videoUrl,
+          mediaType: mediaType,
+          timestamp: serverTimestamp(),
+          expiryTime: expiryTime,
+          views: [],
+          reactions: [],
+          privacy: privacy
+        });
+
+        storyModal.style.display = "none";
+        clearStoryForm();
+        loadStories();
+        
+        // Send notification to user
+        sendStoryNotification('created');
+      } catch (error) {
+        console.error("Error sharing story:", error);
+        alert("Error sharing story");
+      }
+    });
+
+    // Send story notification
+    async function sendStoryNotification(type, storyId = null) {
+      try {
+        const notification = {
+          type: type,
+          userId: currentUser.uid,
+          userName: currentUser.firstName + " " + currentUser.lastName,
+          userImage: currentUser.profileImageUrl || "images/default-profile.png",
+          timestamp: Date.now(),
+          storyId: storyId,
+          read: false
+        };
+        
+        // Save to user's notifications collection in Firestore
+        await addDoc(collection(db, "notifications"), notification);
+      } catch (error) {
+        console.error("Error sending notification:", error);
+      }
+    }
+
+    // Load user's contacts
+    async function loadUserContacts() {
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          userContacts = userData.contacts || [];
+        }
+      } catch (error) {
+        console.error("Error loading contacts:", error);
+        userContacts = [];
+      }
+    }
+
+    // Load and display stories
+    async function loadStories() {
+      try {
+        await loadUserContacts();
+        
+        const snapshot = await getDocs(collection(db, "stories"));
+        const now = Date.now();
+        
+        let allStories = [];
+        let myStories = [];
+        let otherStories = [];
+        let viewedStories = [];
+
+        snapshot.forEach(doc => {
+          const story = doc.data();
+          story.id = doc.id;
+          
+          // Skip expired stories
+          if (story.expiryTime && story.expiryTime < now) {
+            return;
+          }
+
+          // Check privacy settings
+          if (!canViewStory(story)) {
+            return;
+          }
+
+          if (story.userId === currentUser?.uid) {
+            myStories.push(story);
+          } else {
+            const isViewed = story.views && story.views.some(v => v.userId === currentUser?.uid);
+            if (isViewed) {
+              viewedStories.push(story);
+            } else {
+              otherStories.push(story);
+            }
+          }
+        });
+
+        // Sort by timestamp
+        myStories.sort((a, b) => (b.timestamp?.toDate?.()?.getTime() || 0) - (a.timestamp?.toDate?.()?.getTime() || 0));
+        otherStories.sort((a, b) => (b.timestamp?.toDate?.()?.getTime() || 0) - (a.timestamp?.toDate?.()?.getTime() || 0));
+        viewedStories.sort((a, b) => (b.timestamp?.toDate?.()?.getTime() || 0) - (a.timestamp?.toDate?.()?.getTime() || 0));
+
+        // Update my story
+        const myStoryCircle = document.getElementById("my-story-circle");
+        const myStoryImg = document.getElementById("my-story-img");
+        const myStoryCount = document.getElementById("my-story-count");
+        
+        if (myStories.length > 0) {
+          myStoryImg.src = myStories[0].imageUrl || myStories[0].videoUrl || myStories[0].userImage || "images/default-profile.png";
+          myStoryCircle.style.border = "none";
+          myStoryCount.textContent = myStories.length + " update" + (myStories.length > 1 ? "s" : "");
+          myStoriesData = [...myStories];
+        } else {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            myStoryImg.src = userDoc.data().profileImageUrl || "images/default-profile.png";
+          }
+          myStoryCircle.style.border = "2px dashed #ccc";
+          myStoryCount.textContent = "0 updates";
+        }
+
+        // Store for navigation
+        unviewedStoriesData = [...otherStories];
+        viewedStoriesData = [...viewedStories];
+
+        // Render other stories
+        renderStories(otherStories, storiesList, 'unviewed');
+        
+        // Render viewed stories
+        if (viewedStories.length > 0) {
+          document.getElementById("viewed-section").style.display = "block";
+          renderStories(viewedStories, viewedStoriesList, 'viewed');
+        } else {
+          document.getElementById("viewed-section").style.display = "none";
+        }
+
+        // Load highlights
+        loadHighlights();
+
+      } catch (error) {
+        console.error("Error loading stories:", error);
+      }
+    }
+
+    // Check if user can view story based on privacy
+    function canViewStory(story) {
+      if (story.userId === currentUser?.uid) return true;
+      
+      const privacy = story.privacy || 'public';
+      
+      if (privacy === 'public') return true;
+      if (privacy === 'private' && story.userId === currentUser?.uid) return true;
+      if (privacy === 'contacts' && userContacts.includes(story.userId)) return true;
+      
+      return false;
+    }
+
+    // Render stories
+    function renderStories(stories, container, listType = null) {
+      container.innerHTML = "";
+      
+      if (stories.length === 0) {
+        container.innerHTML = "<p class='no-stories'>No stories yet</p>";
+        return;
+      }
+
+      // Group stories by user
+      const groupedStories = {};
+      stories.forEach(story => {
+        if (!groupedStories[story.userId]) {
+          groupedStories[story.userId] = [];
+        }
+        groupedStories[story.userId].push(story);
+      });
+
+      Object.values(groupedStories).forEach(userStories => {
+        const story = userStories[0];
+        const storyDiv = document.createElement("div");
+        storyDiv.className = "story-item";
+        
+        const timeAgo = getTimeAgo(story.timestamp);
+        const isViewed = story.views && story.views.some(v => v.userId === currentUser?.uid);
+        const hasReaction = story.reactions && story.reactions.length > 0;
+        
+        storyDiv.innerHTML = `
+          <div class="story-ring ${isViewed ? '' : 'unviewed'}">
+            <img src="${story.userImage || 'images/default-profile.png'}" alt="${story.userName}">
+            ${story.mediaType === 'video' ? '<div class="video-indicator"><i class="ri-play-fill"></i></div>' : ''}
+          </div>
+          <div class="story-info">
+            <h4>${story.userName}</h4>
+            <p>${timeAgo}${hasReaction ? ' • ' + story.reactions.length + ' reactions' : ''}</p>
+          </div>
+        `;
+        
+        const storyList = listType === 'unviewed' ? unviewedStoriesData : (listType === 'viewed' ? viewedStoriesData : stories);
+        storyDiv.addEventListener("click", () => viewStory(story, storyList));
+        container.appendChild(storyDiv);
+      });
+    }
+
+    // Current story being viewed
+    let currentStory = null;
+    let viewedStoriesData = [];
+    let unviewedStoriesData = [];
+
+    // View story
+    async function viewStory(story, storyList = null, isUnviewedList = false) {
+      currentStory = story;
+      currentViewingStory = story;
+      currentStoryIndex = storyList ? storyList.findIndex(s => s.id === story.id) : 0;
+      allViewableStories = storyList || [];
+      
+      document.getElementById("viewer-user-img").src = story.userImage || "images/default-profile.png";
+      document.getElementById("viewer-user-name").textContent = story.userName;
+      document.getElementById("viewer-story-time").textContent = getTimeAgo(story.timestamp);
+      
+      // Show privacy badge if not own story
+      const privacyBadge = document.getElementById("viewer-story-privacy");
+      if (story.privacy && story.privacy !== 'public' && story.userId !== currentUser?.uid) {
+        privacyBadge.textContent = story.privacy === 'contacts' ? 'Contacts' : 'Private';
+        privacyBadge.style.display = "inline-block";
+      } else {
+        privacyBadge.style.display = "none";
+      }
+      
+      // Show image or video
+      const viewerImg = document.getElementById("viewer-story-img");
+      const viewerVideo = document.getElementById("viewer-story-video");
+      
+      if (story.videoUrl) {
+        viewerVideo.src = story.videoUrl;
+        viewerVideo.style.display = "block";
+        viewerImg.style.display = "none";
+      } else if (story.imageUrl) {
+        viewerImg.src = story.imageUrl;
+        viewerImg.style.display = "block";
+        viewerVideo.style.display = "none";
+      } else {
+        viewerImg.style.display = "none";
+        viewerVideo.style.display = "none";
+      }
+      
+      // Display styled text
+      const viewerText = document.getElementById("viewer-story-text");
+      if (story.styledText) {
+        let style = `color: ${story.styledText.color || '#ffffff'};`;
+        if (story.styledText.bold) style += 'font-weight: bold;';
+        if (story.styledText.italic) style += 'font-style: italic;';
+        if (story.styledText.underline) style += 'text-decoration: underline;';
+        viewerText.style = style;
+        viewerText.textContent = story.styledText.text || "";
+      } else {
+        viewerText.textContent = story.text || "";
+        viewerText.style = "";
+      }
+      
+      storyViewer.style.display = "flex";
+
+      // Show/hide options for own stories
+      const moreOptionsBtn = document.getElementById("more-story-options");
+      if (story.userId === currentUser?.uid) {
+        moreOptionsBtn.style.display = "block";
+      } else {
+        moreOptionsBtn.style.display = "none";
+      }
+
+      // Show/hide views button
+      const viewsSection = document.getElementById("story-views-section");
+      if (story.userId === currentUser?.uid) {
+        viewsSection.style.display = "block";
+        document.getElementById("views-count").textContent = story.views ? story.views.length : "0";
+      } else {
+        viewsSection.style.display = "none";
+      }
+
+      // Show current reaction if any
+      updateCurrentReaction(story);
+
+      // Mark as viewed (only if not own story)
+      if (story.userId !== currentUser?.uid) {
+        if (!story.views || !story.views.some(v => v.userId === currentUser?.uid)) {
+          const newView = {
+            userId: currentUser.uid,
+            userName: currentUser.firstName + " " + currentUser.lastName,
+            userImage: currentUser.profileImageUrl || "images/default-profile.png",
+            viewedAt: Date.now()
+          };
+          const newViews = story.views ? [...story.views, newView] : [newView];
+          await updateDoc(doc(db, "stories", story.id), { views: newViews });
+          
+          // Send notification to story owner
+          sendStoryNotification('viewed', story.id);
+        }
+      }
+      
+      // Start progress bar animation
+      startProgressBar();
+    }
+
+    // Update current reaction display
+    function updateCurrentReaction(story) {
+      const reactionDiv = document.getElementById("current-reaction");
+      if (story.reactions && story.reactions.length > 0) {
+        const userReaction = story.reactions.find(r => r.userId === currentUser?.uid);
+        if (userReaction) {
+          reactionDiv.textContent = userReaction.reaction;
+          reactionDiv.style.display = "block";
+        } else {
+          reactionDiv.style.display = "none";
+        }
+      } else {
+        reactionDiv.style.display = "none";
+      }
+    }
+
+    // Reaction buttons
+    document.querySelectorAll('.reaction-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!currentViewingStory || currentViewingStory.userId === currentUser?.uid) return;
+        
+        const reaction = btn.dataset.reaction;
+        const existingReaction = currentViewingStory.reactions || [];
+        const existingIndex = existingReaction.findIndex(r => r.userId === currentUser?.uid);
+        
+        let newReactions;
+        if (existingIndex >= 0) {
+          // Update existing reaction
+          newReactions = [...existingReaction];
+          newReactions[existingIndex] = {
+            userId: currentUser.uid,
+            userName: currentUser.firstName + " " + currentUser.lastName,
+            reaction: reaction,
+            timestamp: Date.now()
+          };
+        } else {
+          // Add new reaction
+          newReactions = [...existingReaction, {
+            userId: currentUser.uid,
+            userName: currentUser.firstName + " " + currentUser.lastName,
+            reaction: reaction,
+            timestamp: Date.now()
+          }];
+        }
+        
+        await updateDoc(doc(db, "stories", currentViewingStory.id), { reactions: newReactions });
+        updateCurrentReaction({ ...currentViewingStory, reactions: newReactions });
+      });
+    });
+
+    // More story options menu
+    document.getElementById("more-story-options").addEventListener("click", () => {
+      const menu = document.getElementById("story-options-menu");
+      menu.style.display = menu.style.display === "none" ? "block" : "none";
+    });
+
+    // Delete story
+    document.getElementById("delete-story-btn").addEventListener("click", async () => {
+      if (!currentViewingStory || currentViewingStory.userId !== currentUser?.uid) return;
+      
+      if (confirm("Are you sure you want to delete this story?")) {
+        try {
+          // Delete media from storage if exists
+          if (currentViewingStory.imageUrl) {
+            try {
+              const imgRef = ref(storage, currentViewingStory.imageUrl);
+              await deleteObject(imgRef);
+            } catch (e) {}
+          }
+          if (currentViewingStory.videoUrl) {
+            try {
+              const vidRef = ref(storage, currentViewingStory.videoUrl);
+              await deleteObject(vidRef);
+            } catch (e) {}
+          }
+          
+          await deleteDoc(doc(db, "stories", currentViewingStory.id));
+          document.getElementById("story-options-menu").style.display = "none";
+          storyViewer.style.display = "none";
+          loadStories();
+        } catch (error) {
+          console.error("Error deleting story:", error);
+          alert("Error deleting story");
+        }
+      }
+    });
+
+    // Save to highlights
+    document.getElementById("save-to-highlight-btn").addEventListener("click", () => {
+      document.getElementById("story-options-menu").style.display = "none";
+      openHighlightModal();
+    });
+
+    // Privacy settings
+    document.getElementById("privacy-settings-btn").addEventListener("click", () => {
+      document.getElementById("story-options-menu").style.display = "none";
+      document.getElementById("privacy-modal").style.display = "flex";
+    });
+
+    // Progress bar functions
+    function startProgressBar() {
+      // Starting a new story always resets pause state
+      isStoryPaused = false;
+      holdPauseActive = false;
+      pauseAtProgressValue = 0;
+      document.getElementById("story-viewer").classList.remove("is-paused");
+
+      stopProgressBar(true);
+      
+      const progressContainer = document.getElementById("story-progress-container");
+      progressContainer.innerHTML = "";
+      
+      const allStories = allViewableStories || [];
+      
+      if (allStories.length > 0) {
+        allStories.forEach((_, index) => {
+          const progressBar = document.createElement("div");
+          progressBar.className = "story-progress-bar";
+
+          if (index < currentStoryIndex) {
+            progressBar.classList.add("completed");
+            progressBar.innerHTML = '<div class="story-progress-fill" style="width: 100%;"></div>';
+          } else if (index === currentStoryIndex) {
+            progressBar.innerHTML = '<div class="story-progress-fill"></div>';
+          } else {
+            progressBar.innerHTML = '<div class="story-progress-fill" style="width: 0%;"></div>';
+          }
+
+          progressContainer.appendChild(progressBar);
+        });
+        
+        progressValue = 0;
+        const currentProgressBar = progressContainer.children[currentStoryIndex];
+
+        if (currentProgressBar) {
+          const fill = currentProgressBar.querySelector(".story-progress-fill");
+          if (progressInterval) clearInterval(progressInterval);
+          progressInterval = setInterval(() => {
+            if (isStoryPaused) return;
+            progressValue += (PROGRESS_INTERVAL / STORY_DURATION) * 100;
+            if (fill) fill.style.width = Math.min(progressValue, 100) + "%";
+
+            if (progressValue >= 100) nextStory();
+          }, PROGRESS_INTERVAL);
+        }
+      }
+    }
+
+    // keepReset=false means we do NOT reset progressValue to 0 (used for pause/resume)
+    function stopProgressBar(keepReset = false) {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+      if (!keepReset) {
+        progressValue = 0;
+      }
+    }
+
+    function setPaused(paused) {
+      isStoryPaused = paused;
+      holdPauseActive = paused;
+      document.getElementById("story-viewer").classList.toggle("is-paused", paused);
+
+      if (paused) {
+        pauseAtProgressValue = progressValue;
+        stopProgressBar(true);
+
+        const progressContainer = document.getElementById("story-progress-container");
+        const currentProgressBar = progressContainer.children[currentStoryIndex];
+        const fill = currentProgressBar?.querySelector(".story-progress-fill");
+        if (fill) fill.style.width = Math.min(pauseAtProgressValue, 100) + "%";
+      } else {
+        // Resume interval from pauseAtProgressValue
+        progressValue = pauseAtProgressValue;
+        pauseAtProgressValue = 0;
+
+        const progressContainer = document.getElementById("story-progress-container");
+        const currentProgressBar = progressContainer.children[currentStoryIndex];
+        const fill = currentProgressBar?.querySelector(".story-progress-fill");
+
+        stopProgressBar(true);
+        if (fill) fill.style.width = Math.min(progressValue, 100) + "%";
+
+        progressInterval = setInterval(() => {
+          if (isStoryPaused) return;
+          progressValue += (PROGRESS_INTERVAL / STORY_DURATION) * 100;
+          if (fill) fill.style.width = Math.min(progressValue, 100) + "%";
+
+          if (progressValue >= 100) nextStory();
+        }, PROGRESS_INTERVAL);
+      }
+    }
+
+
+    function nextStory() {
+      stopProgressBar();
+      const allStories = allViewableStories || [];
+      if (allStories.length > 0 && currentStoryIndex < allStories.length - 1) {
+        currentStoryIndex++;
+        const nextStoryData = allStories[currentStoryIndex];
+        viewStory(nextStoryData, allStories);
+      } else {
+        storyViewer.style.display = "none";
+      }
+    }
+
+    function prevStory() {
+      stopProgressBar();
+      const allStories = allViewableStories || [];
+      if (allStories.length > 0 && currentStoryIndex > 0) {
+        currentStoryIndex--;
+        const prevStoryData = allStories[currentStoryIndex];
+        viewStory(prevStoryData, allStories);
+      } else {
+        startProgressBar();
+      }
+    }
+
+    // Navigation event listeners
+    document.getElementById("story-nav-prev").addEventListener("click", prevStory);
+    document.getElementById("story-nav-next").addEventListener("click", nextStory);
+
+    // Tap-and-hold to pause/resume story
+    const viewerEl = document.getElementById("story-viewer");
+
+    function canHoldPause() {
+      // Avoid pausing when interacting with input/button areas
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'BUTTON')) {
+        return false;
+      }
+      return true;
+    }
+
+    viewerEl.addEventListener('pointerdown', (e) => {
+      if (!canHoldPause()) return;
+      if (e.button !== undefined && e.button !== 0) return;
+      holdPauseActive = true;
+      // Prevent accidental clicks from triggering next/prev
+      e.preventDefault();
+      e.stopPropagation();
+      setPaused(true);
+    }, { passive: false });
+
+    viewerEl.addEventListener('pointerup', (e) => {
+      if (!holdPauseActive) return;
+      holdPauseActive = false;
+      setPaused(false);
+      e.preventDefault();
+      e.stopPropagation();
+    }, { passive: false });
+
+    viewerEl.addEventListener('pointercancel', () => {
+      holdPauseActive = false;
+      setPaused(false);
+    });
+
+    // If user drags finger outside viewer, resume
+    viewerEl.addEventListener('pointerleave', () => {
+      if (!holdPauseActive) return;
+      holdPauseActive = false;
+      setPaused(false);
+    });
+
+
+    // Send story reply
+    document.getElementById("send-story-reply").addEventListener("click", async () => {
+      const replyInput = document.getElementById("story-reply-input");
+      const replyText = replyInput.value.trim();
+      
+      if (!replyText || !currentViewingStory) return;
+      
+      try {
+        const reply = {
+          userId: currentUser.uid,
+          userName: currentUser.firstName + " " + currentUser.lastName,
+          userImage: currentUser.profileImageUrl || "images/default-profile.png",
+          text: replyText,
+          timestamp: Date.now()
+        };
+        
+        const currentReplies = currentViewingStory.replies || [];
+        const newReplies = [...currentReplies, reply];
+        
+        await updateDoc(doc(db, "stories", currentViewingStory.id), { replies: newReplies });
+        
+        replyInput.value = "";
+        // Create/append a chat thread linked to this story reply
+        // Threading approach (client-side): store a deterministic thread id so other pages can open the same conversation.
+        const storyThreadId = `story_${currentViewingStory.id}`;
+
+        // Ensure a conversations doc exists (best-effort; schema depends on your chat implementation)
+        try {
+          await addDoc(collection(db, "conversations"), {
+            threadId: storyThreadId,
+            type: "story_reply",
+            storyId: currentViewingStory.id,
+            participants: [currentUser.uid, currentViewingStory.userId],
+            createdAt: serverTimestamp()
+          });
+        } catch (e) {
+          // ignore if conversations already exist or schema differs
+        }
+
+        // Best-effort: write message in a generic messages collection.
+        // If your app uses a different collection name, adjust here.
+        try {
+          await addDoc(collection(db, "messages"), {
+            threadId: storyThreadId,
+            conversationType: "story_reply",
+            fromId: currentUser.uid,
+            toId: currentViewingStory.userId,
+            text: replyText,
+            timestamp: serverTimestamp(),
+            storyId: currentViewingStory.id
+          });
+        } catch (e) {
+          // ignore if collection structure differs
+        }
+
+        // Send notification
+        sendStoryNotification('reply', currentViewingStory.id);
+
+        
+        loadStories();
+      } catch (error) {
+        console.error("Error sending reply:", error);
+        alert("Error sending reply");
+      }
+    });
+
+    document.getElementById("story-reply-input").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("send-story-reply").click();
+      }
+    });
+
+    // View story views
+    document.getElementById("view-views-btn").addEventListener("click", async () => {
+      if (!currentViewingStory) return;
+      
+      const viewsListPanel = document.getElementById("views-list-panel");
+      const viewsListContent = document.getElementById("views-list-content");
+      
+      viewsListContent.innerHTML = "";
+      
+      // Views tab
+      const viewsTab = document.createElement("div");
+      viewsTab.className = "tab-content active";
+      viewsTab.id = "views-tab-content";
+      
+      if (currentViewingStory.views && currentViewingStory.views.length > 0) {
+        const sortedViews = [...currentViewingStory.views].sort((a, b) => (b.viewedAt || 0) - (a.viewedAt || 0));
+        
+        sortedViews.forEach(view => {
+          const viewDiv = document.createElement("div");
+          viewDiv.className = "view-item";
+          viewDiv.innerHTML = `
+            <img src="${view.userImage || 'images/default-profile.png'}" alt="${view.userName}">
+            <div class="view-info">
+              <h4>${view.userName}</h4>
+              <p>${getViewTimeAgo(view.viewedAt)}</p>
+            </div>
+          `;
+          viewsTab.appendChild(viewDiv);
+        });
+      } else {
+        viewsTab.innerHTML = "<p class='no-views'>No views yet</p>";
+      }
+      viewsListContent.appendChild(viewsTab);
+      
+      // Reactions tab
+      const reactionsTab = document.createElement("div");
+      reactionsTab.className = "tab-content";
+      reactionsTab.id = "reactions-tab-content";
+      reactionsTab.style.display = "none";
+      
+      if (currentViewingStory.reactions && currentViewingStory.reactions.length > 0) {
+        const sortedReactions = [...currentViewingStory.reactions].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        
+        sortedReactions.forEach(reaction => {
+          const reactionDiv = document.createElement("div");
+          reactionDiv.className = "view-item";
+          reactionDiv.innerHTML = `
+            <span class="reaction-emoji">${reaction.reaction}</span>
+            <div class="view-info">
+              <h4>${reaction.userName}</h4>
+              <p>${getViewTimeAgo(reaction.timestamp)}</p>
+            </div>
+          `;
+          reactionsTab.appendChild(reactionDiv);
+        });
+      } else {
+        reactionsTab.innerHTML = "<p class='no-views'>No reactions yet</p>";
+      }
+      viewsListContent.appendChild(reactionsTab);
+      
+      viewsListPanel.classList.add("show");
+    });
+
+    // Views tab switching
+    document.querySelectorAll('.views-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.views-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        document.getElementById('views-tab-content').style.display = tab.dataset.tab === 'views' ? 'block' : 'none';
+        document.getElementById('reactions-tab-content').style.display = tab.dataset.tab === 'reactions' ? 'block' : 'none';
+      });
+    });
+
+    // Close views panel
+    document.getElementById("close-views-panel").addEventListener("click", () => {
+      document.getElementById("views-list-panel").classList.remove("show");
+    });
+
+    // Close views panel when clicking outside
+    document.getElementById("views-list-panel").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("views-list-panel")) {
+        document.getElementById("views-list-panel").classList.remove("show");
+      }
+    });
+
+    // Get view time ago
+    function getViewTimeAgo(timestamp) {
+      if (!timestamp) return "Just now";
+      
+      const now = Date.now();
+      const diff = now - timestamp;
+      
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      
+      if (minutes < 1) return "Just now";
+      if (minutes < 60) return minutes + "m ago";
+      if (hours < 24) return hours + "h ago";
+      return "Yesterday";
+    }
+
+    // Time ago helper
+    function getTimeAgo(timestamp) {
+      if (!timestamp) return "Just now";
+      
+      const now = Date.now();
+      const time = timestamp.toDate ? timestamp.toDate().getTime() : new Date(timestamp).getTime();
+      const diff = now - time;
+      
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+      
+      if (minutes < 1) return "Just now";
+      if (minutes < 60) return minutes + "m ago";
+      if (hours < 24) return hours + "h ago";
+      return days + "d ago";
+    }
+
+    // Highlights
+    async function loadHighlights() {
+      try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (!userDoc.exists()) return;
+        
+        const highlights = userDoc.data().highlights || [];
+        const highlightsContainer = document.getElementById("highlights-list");
+        
+        // Clear existing highlights (keep the add button)
+        const addBtn = document.getElementById("add-highlight-btn");
+        highlightsContainer.innerHTML = '';
+        
+        for (const highlight of highlights) {
+          const highlightDiv = document.createElement("div");
+          highlightDiv.className = "highlight-item";
+          highlightDiv.innerHTML = `
+            <div class="highlight-circle">
+              <img src="${highlight.coverImage || 'images/default-profile.png'}" alt="${highlight.name}">
+            </div>
+            <span>${highlight.name}</span>
+          `;
+          highlightDiv.addEventListener("click", () => viewHighlight(highlight));
+          highlightsContainer.appendChild(highlightDiv);
+        }
+        
+        highlightsContainer.appendChild(addBtn);
+        
+        // Show/hide highlights section
+        document.getElementById("highlights-section").style.display = highlights.length > 0 || myStoriesData.length > 0 ? "block" : "none";
+        
+      } catch (error) {
+        console.error("Error loading highlights:", error);
+      }
+    }
+
+    function viewHighlight(highlight) {
+      // View stories in highlight
+      if (highlight.stories && highlight.stories.length > 0) {
+        viewStory(highlight.stories[0], highlight.stories);
+      }
+    }
+
+    // Open highlight modal
+    function openHighlightModal() {
+      const modal = document.getElementById("highlight-modal");
+      const listContainer = document.getElementById("highlight-stories-list");
+      
+      listContainer.innerHTML = "";
+      
+      myStoriesData.forEach(story => {
+        const storyDiv = document.createElement("div");
+        storyDiv.className = "highlight-story-select";
+        storyDiv.innerHTML = `
+          <img src="${story.imageUrl || story.videoUrl || story.userImage}" alt="Story">
+          <input type="checkbox" value="${story.id}">
+        `;
+        listContainer.appendChild(storyDiv);
+      });
+      
+      modal.style.display = "flex";
+    }
+
+    document.getElementById("add-highlight-btn").addEventListener("click", openHighlightModal);
+
+    document.getElementById("close-highlight-modal").addEventListener("click", () => {
+      document.getElementById("highlight-modal").style.display = "none";
+    });
+
+    document.getElementById("save-highlight-btn-final").addEventListener("click", async () => {
+      const name = document.getElementById("highlight-name").value.trim();
+      const selectedCheckboxes = document.querySelectorAll("#highlight-stories-list input:checked");
+      const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+      
+      if (!name) {
+        alert("Please enter a highlight name");
+        return;
+      }
+      
+      if (selectedIds.length === 0) {
+        alert("Please select at least one story");
+        return;
+      }
+      
+      try {
+        const selectedStories = myStoriesData.filter(s => selectedIds.includes(s.id));
+        const coverImage = selectedStories[0]?.imageUrl || selectedStories[0]?.videoUrl || currentUser.profileImageUrl;
+        
+        const userRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userRef);
+        const highlights = userDoc.data()?.highlights || [];
+        
+        highlights.push({
+          id: Date.now().toString(),
+          name: name,
+          coverImage: coverImage,
+          stories: selectedStories,
+          createdAt: Date.now()
+        });
+        
+        await updateDoc(userRef, { highlights: highlights });
+        
+        document.getElementById("highlight-modal").style.display = "none";
+        document.getElementById("highlight-name").value = "";
+        loadHighlights();
+        
+      } catch (error) {
+        console.error("Error creating highlight:", error);
+        alert("Error creating highlight");
+      }
+    });
+
+    // Privacy modal
+    document.getElementById("close-privacy-modal").addEventListener("click", () => {
+      document.getElementById("privacy-modal").style.display = "none";
+    });
+
+    document.getElementById("save-privacy-btn").addEventListener("click", async () => {
+      const defaultPrivacy = document.querySelector('input[name="default-privacy"]:checked').value;
+      
+      try {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          storyPrivacy: defaultPrivacy
+        });
+        
+        document.getElementById("privacy-modal").style.display = "none";
+        alert("Privacy settings saved!");
+        loadStories();
+      } catch (error) {
+        console.error("Error saving privacy:", error);
+        alert("Error saving settings");
+      }
+    });
+
+    // Real-time listener for stories
+    function setupStoriesListener() {
+      onSnapshot(collection(db, "stories"), () => {
+        loadStories();
+      });
+    }
+
+    // Initialize
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          user.firstName = userData.firstName || "";
+          user.lastName = userData.lastName || "";
+          user.profileImageUrl = userData.profileImageUrl || "images/default-profile.png";
+        }
+        
+        loadStories();
+        setupStoriesListener();
+      } else {
+        window.location.href = "auth.html";
+      }
+    });
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

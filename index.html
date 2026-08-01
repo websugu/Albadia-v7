@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Shat App</title>
+    <link rel="stylesheet" href="CSS/index.css">
+    <!-- Icon integration -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0b1220">
+    <link rel="apple-touch-icon" href="IMG/LOGO.png">
+</head>
+
+<body>
+    <div class="landing-container">
+        <!-- App Icon -->
+        <div class="app-icon">
+            <i class="ri-chat-3-fill"></i>
+        </div>
+
+        <!-- Welcome Content -->
+        <div class="landing-content">
+            <h1>Welcome to Shat App</h1>
+            <p>Connect with friends and family instantly. Experience seamless messaging with a modern interface designed for you.</p>
+            
+            <!-- CTA Button -->
+            <a href="auth.html" class="cta-button">
+                Get Started
+                <i class="ri-arrow-right-line"></i>
+            </a>
+        </div>
+
+        <!-- Features Preview -->
+        <div class="features-preview">
+            <div class="feature-item">
+                <i class="ri-message-3-fill"></i>
+                <span>Messaging</span>
+            </div>
+            <div class="feature-item">
+                <i class="ri-phone-fill"></i>
+                <span>Calls</span>
+            </div>
+            <div class="feature-item">
+                <i class="ri-user-smile-fill"></i>
+                <span>Stories</span>
+            </div>
+        </div>
+    </div>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
